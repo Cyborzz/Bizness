@@ -1,0 +1,202 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth/queries";
+import { canAccessBusiness } from "@/lib/permissions";
+import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  cardActionSchema,
+  deleteCustomerSchema,
+  updateMarketingConsentSchema,
+} from "@/lib/validators/loyalty";
+
+async function loadCard(cardId: string) {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("loyalty_cards")
+    .select("*, businesses(stamps_required), customers(id)")
+    .eq("id", cardId)
+    .single();
+
+  if (error || !data) return null;
+  return data;
+}
+
+async function assertCardAccess(cardId: string) {
+  const { user, profile } = await requireAdmin();
+  const card = await loadCard(cardId);
+
+  if (!card || !canAccessBusiness(profile, card.business_id)) {
+    return { user, card: null };
+  }
+
+  return { user, card };
+}
+
+export async function addStampAction(formData: FormData) {
+  const parsed = cardActionSchema.safeParse({ cardId: formData.get("cardId") });
+  if (!parsed.success) redirect("/admin/cards?error=invalid-card");
+
+  const { user, card } = await assertCardAccess(parsed.data.cardId);
+  if (!card || card.status !== "active") redirect("/admin/cards?error=card-unavailable");
+
+  const required = card.businesses?.stamps_required ?? 10;
+  const nextCurrent = card.current_stamps + 1;
+  const rewardEarned = nextCurrent >= required;
+  const current_stamps = rewardEarned ? 0 : nextCurrent;
+  const rewards_available = card.rewards_available + (rewardEarned ? 1 : 0);
+  const total_stamps = card.total_stamps + 1;
+  const supabase = createAdminClient();
+
+  await supabase
+    .from("loyalty_cards")
+    .update({ current_stamps, total_stamps, rewards_available })
+    .eq("id", card.id);
+
+  await supabase.from("transactions").insert([
+    {
+      business_id: card.business_id,
+      customer_id: card.customer_id,
+      card_id: card.id,
+      type: "stamp_added",
+      value: 1,
+      created_by: user.id,
+    },
+    ...(rewardEarned
+      ? [
+          {
+            business_id: card.business_id,
+            customer_id: card.customer_id,
+            card_id: card.id,
+            type: "reward_earned" as const,
+            value: 1,
+            note: "Récompense débloquée automatiquement",
+            created_by: user.id,
+          },
+        ]
+      : []),
+  ]);
+
+  revalidatePath("/admin/cards");
+  redirect("/admin/cards?success=stamp-added");
+}
+
+export async function removeStampAction(formData: FormData) {
+  const parsed = cardActionSchema.safeParse({ cardId: formData.get("cardId") });
+  if (!parsed.success) redirect("/admin/cards?error=invalid-card");
+
+  const { user, card } = await assertCardAccess(parsed.data.cardId);
+  if (!card || card.status !== "active") redirect("/admin/cards?error=card-unavailable");
+  if (card.current_stamps <= 0) redirect("/admin/cards?error=no-stamp");
+
+  const supabase = createAdminClient();
+  await supabase
+    .from("loyalty_cards")
+    .update({ current_stamps: card.current_stamps - 1 })
+    .eq("id", card.id);
+
+  await supabase.from("transactions").insert({
+    business_id: card.business_id,
+    customer_id: card.customer_id,
+    card_id: card.id,
+    type: "stamp_removed",
+    value: -1,
+    created_by: user.id,
+  });
+
+  revalidatePath("/admin/cards");
+  redirect("/admin/cards?success=stamp-removed");
+}
+
+export async function redeemRewardAction(formData: FormData) {
+  const parsed = cardActionSchema.safeParse({ cardId: formData.get("cardId") });
+  if (!parsed.success) redirect("/admin/cards?error=invalid-card");
+
+  const { user, card } = await assertCardAccess(parsed.data.cardId);
+  if (!card || card.status !== "active") redirect("/admin/cards?error=card-unavailable");
+  if (card.rewards_available <= 0) redirect("/admin/cards?error=no-reward");
+
+  const supabase = createAdminClient();
+  await supabase
+    .from("loyalty_cards")
+    .update({ rewards_available: card.rewards_available - 1 })
+    .eq("id", card.id);
+
+  await supabase.from("transactions").insert({
+    business_id: card.business_id,
+    customer_id: card.customer_id,
+    card_id: card.id,
+    type: "reward_redeemed",
+    value: -1,
+    created_by: user.id,
+  });
+
+  revalidatePath("/admin/cards");
+  redirect("/admin/cards?success=reward-redeemed");
+}
+
+export async function deleteCustomerAction(formData: FormData) {
+  const parsed = deleteCustomerSchema.safeParse({ customerId: formData.get("customerId") });
+  if (!parsed.success) redirect("/admin/customers?error=invalid-customer");
+
+  const { user, profile } = await requireAdmin();
+  const supabase = createAdminClient();
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("id,business_id,loyalty_cards(id)")
+    .eq("id", parsed.data.customerId)
+    .single();
+
+  if (!customer || !canAccessBusiness(profile, customer.business_id)) {
+    redirect("/admin/customers?error=access-denied");
+  }
+
+  if (profile.role !== "super_admin" && profile.role !== "business_owner") {
+    redirect("/admin/customers?error=access-denied");
+  }
+
+  const cardId = customer.loyalty_cards?.[0]?.id;
+  if (cardId) {
+    await supabase.from("transactions").insert({
+      business_id: customer.business_id,
+      customer_id: customer.id,
+      card_id: cardId,
+      type: "customer_deleted",
+      value: 0,
+      created_by: user.id,
+    });
+  }
+
+  await supabase.from("customers").delete().eq("id", customer.id);
+  revalidatePath("/admin/customers");
+  redirect("/admin/customers?success=customer-deleted");
+}
+
+export async function updateMarketingConsentAction(formData: FormData) {
+  const parsed = updateMarketingConsentSchema.safeParse({
+    customerId: formData.get("customerId"),
+    consent_marketing: formData.get("consent_marketing") === "on",
+  });
+  if (!parsed.success) redirect("/admin/customers?error=invalid-customer");
+
+  const { profile } = await requireAdmin();
+  const supabase = createAdminClient();
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("business_id")
+    .eq("id", parsed.data.customerId)
+    .single();
+
+  if (!customer || !canAccessBusiness(profile, customer.business_id)) {
+    redirect("/admin/customers?error=access-denied");
+  }
+
+  await supabase
+    .from("customers")
+    .update({ consent_marketing: parsed.data.consent_marketing })
+    .eq("id", parsed.data.customerId);
+
+  revalidatePath("/admin/customers");
+  redirect("/admin/customers?success=consent-updated");
+}

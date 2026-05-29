@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hors ligne — FideliQR</title>
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #0a0f1f;
+        color: #fff;
+        padding: 24px;
+      }
+      .card { max-width: 420px; text-align: center; }
+      h1 { font-size: 32px; margin: 16px 0 8px; font-weight: 900; letter-spacing: -0.5px; }
+      p { color: rgba(255,255,255,0.7); margin: 0; }
+      .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(245,184,75,0.15); color: #f5b84b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+      button {
+        margin-top: 24px;
+        background: #2454ff;
+        color: #fff;
+        border: 0;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <span class="badge">Hors ligne</span>
+      <h1>Pas de connexion</h1>
+      <p>Vérifiez votre Wi-Fi ou vos données mobiles. Votre carte fidélité est sauvegardée — elle se mettra à jour dès le retour du réseau.</p>
+      <button onclick="location.reload()">Réessayer</button>
+    </div>
+  </body>
+</html>
