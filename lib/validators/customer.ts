@@ -14,6 +14,15 @@ export const customerSignupSchema = z
       .optional()
       .transform((value) => value || null)
       .pipe(z.string().email("Email invalide").nullable()),
+    birthdate: z
+      .string()
+      .trim()
+      .optional()
+      .transform((value) => value || null)
+      .refine(
+        (value) => value === null || !Number.isNaN(Date.parse(value)),
+        "Date invalide",
+      ),
     consent_loyalty: z.coerce.boolean().refine(Boolean, "Consentement requis"),
     consent_marketing: z.coerce.boolean().default(false),
   })
@@ -23,3 +32,10 @@ export const customerSignupSchema = z
   });
 
 export type CustomerSignupValues = z.infer<typeof customerSignupSchema>;
+
+export const customerLookupSchema = z.object({
+  business_slug: z.string().trim().min(1),
+  contact: z.string().trim().min(3, "Téléphone ou email requis"),
+});
+
+export type CustomerLookupValues = z.infer<typeof customerLookupSchema>;

@@ -5,7 +5,15 @@ import { LoyaltyCardPreview } from "@/components/loyalty/LoyaltyCardPreview";
 import { TransactionList } from "@/components/loyalty/TransactionList";
 import { PushSubscribeButton } from "@/components/customer/PushSubscribeButton";
 import { SaveCardActions } from "@/components/customer/SaveCardActions";
+import { BirthdayReward } from "@/components/customer/BirthdayReward";
+import { CardQRCode } from "@/components/customer/CardQRCode";
+import { generateQRCodeDataUrl } from "@/lib/qr";
 import { getVapidPublicKey } from "@/lib/push/env";
+import {
+  BIRTHDAY_NOTE,
+  isBirthdayDue,
+  startOfYearISO,
+} from "@/lib/loyalty/milestones";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +39,7 @@ export default async function CustomerCardPage({
   const { data: card } = await supabase
     .from("loyalty_cards")
     .select(
-      "*, businesses(name,slug,logo_url,primary_color,secondary_color,card_style,welcome_message,reward_label,stamps_required,is_active)",
+      "*, businesses(name,slug,logo_url,primary_color,secondary_color,card_style,welcome_message,reward_label,stamps_required,points_required,loyalty_type,is_active,birthday_reward_enabled), customers(birthdate)",
     )
     .eq("id", cardId)
     .maybeSingle();
@@ -65,9 +73,27 @@ export default async function CustomerCardPage({
     .limit(8);
 
   const inactive = card.status !== "active" || !business.is_active;
+
+  let birthdayDue = false;
+  if (
+    !inactive &&
+    business.birthday_reward_enabled &&
+    isBirthdayDue(card.customers?.birthdate)
+  ) {
+    const { data: claimed } = await supabase
+      .from("transactions")
+      .select("id")
+      .eq("card_id", card.id)
+      .eq("note", BIRTHDAY_NOTE)
+      .gte("created_at", startOfYearISO())
+      .limit(1);
+    birthdayDue = !(claimed && claimed.length > 0);
+  }
+
   const vapidPublicKey = getVapidPublicKey();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const cardUrl = `${appUrl}/card/${card.id}`;
+  const qrDataUrl = inactive ? null : await generateQRCodeDataUrl(cardUrl);
 
   return (
     <main className="section-grid min-h-screen bg-[#eef2f7] px-4 py-6">
@@ -80,6 +106,10 @@ export default async function CustomerCardPage({
         ) : null}
 
         <LoyaltyCardPreview business={business} card={card} />
+
+        {birthdayDue ? <BirthdayReward cardId={card.id} /> : null}
+
+        {qrDataUrl ? <CardQRCode dataUrl={qrDataUrl} /> : null}
 
         <SaveCardActions url={cardUrl} cardLabel={`Carte ${business.name}`} />
 

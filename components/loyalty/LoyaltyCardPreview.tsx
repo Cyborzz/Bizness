@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Gift, RefreshCcw, ShieldCheck, Sparkles } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { calculateRemainingStamps } from "@/lib/utils/format";
+import { getLoyaltyTier } from "@/lib/loyalty/milestones";
 import { StampProgress } from "./StampProgress";
 
 type LoyaltyCardPreviewProps = {
@@ -14,6 +15,8 @@ type LoyaltyCardPreviewProps = {
     welcome_message?: string | null;
     reward_label: string;
     stamps_required: number;
+    loyalty_type?: "stamps" | "points" | null;
+    points_required?: number | null;
   };
   card: {
     id: string;
@@ -42,9 +45,14 @@ function buildHeaderBackground(
 }
 
 export function LoyaltyCardPreview({ business, card }: LoyaltyCardPreviewProps) {
-  const remaining = calculateRemainingStamps(card.current_stamps, business.stamps_required);
+  const isPoints = business.loyalty_type === "points";
+  const threshold = isPoints ? business.points_required ?? 100 : business.stamps_required;
+  const unit = isPoints ? "point" : "tampon";
+  const unitPlural = isPoints ? "points" : "tampons";
+  const remaining = calculateRemainingStamps(card.current_stamps, threshold);
   const hasReward = card.rewards_available > 0;
-  const progress = (card.current_stamps / Math.max(business.stamps_required, 1)) * 100;
+  const tier = getLoyaltyTier(card.total_stamps);
+  const progress = (card.current_stamps / Math.max(threshold, 1)) * 100;
   const headerBg = buildHeaderBackground(
     business.primary_color,
     business.secondary_color ?? null,
@@ -92,11 +100,18 @@ export function LoyaltyCardPreview({ business, card }: LoyaltyCardPreviewProps) 
             <p className="text-sm font-bold text-white/60">Progression</p>
             <p className="text-6xl font-black leading-none tracking-tight tabular-nums">
               {card.current_stamps}
-              <span className="text-2xl text-white/50">/{business.stamps_required}</span>
+              <span className="text-2xl text-white/50">/{threshold}</span>
             </p>
           </div>
-          <div className="rounded-full bg-white/15 px-3 py-1 text-xs font-black uppercase">
-            {card.status}
+          <div className="flex flex-col items-end gap-1.5">
+            {tier ? (
+              <div className="rounded-full bg-white/20 px-3 py-1 text-xs font-black ring-1 ring-white/25">
+                {tier.emoji} {tier.label}
+              </div>
+            ) : null}
+            <div className="rounded-full bg-white/15 px-3 py-1 text-xs font-black uppercase">
+              {card.status}
+            </div>
           </div>
         </div>
 
@@ -109,11 +124,13 @@ export function LoyaltyCardPreview({ business, card }: LoyaltyCardPreviewProps) 
       </div>
 
       <div className="space-y-5 p-5">
-        <StampProgress
-          current={card.current_stamps}
-          required={business.stamps_required}
-          color={business.primary_color}
-        />
+        {isPoints ? null : (
+          <StampProgress
+            current={card.current_stamps}
+            required={business.stamps_required}
+            color={business.primary_color}
+          />
+        )}
         <div
           className={
             hasReward
@@ -133,7 +150,7 @@ export function LoyaltyCardPreview({ business, card }: LoyaltyCardPreviewProps) 
               {hasReward
                 ? `🎉 ${card.rewards_available} récompense(s) disponible(s) !`
                 : remaining > 0
-                  ? `Plus que ${remaining} passage(s) avant votre récompense`
+                  ? `Plus que ${remaining} ${unit}(s) avant votre récompense`
                   : "Récompense disponible"}
             </p>
           </div>
@@ -170,7 +187,7 @@ export function LoyaltyCardPreview({ business, card }: LoyaltyCardPreviewProps) 
               </div>
               <div>
                 <p className="text-sm font-black tabular-nums text-ink">{card.total_stamps}</p>
-                <p className="text-xs font-semibold text-muted">tampons total</p>
+                <p className="text-xs font-semibold text-muted">{unitPlural} total</p>
               </div>
             </div>
           </div>

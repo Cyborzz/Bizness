@@ -86,6 +86,9 @@ export async function saveBusinessAction(_: BusinessActionState, formData: FormD
     business_type: formData.get("business_type"),
     loyalty_type: formData.get("loyalty_type") || "stamps",
     stamps_required: formData.get("stamps_required") || 10,
+    points_required: formData.get("points_required") || 100,
+    stamp_cooldown_minutes: formData.get("stamp_cooldown_minutes") || 0,
+    birthday_reward_enabled: formData.get("birthday_reward_enabled") === "on",
     reward_label: formData.get("reward_label") || "1 récompense offerte",
     is_active: formData.get("is_active") === "on",
   });

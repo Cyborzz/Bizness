@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Gift, ShieldCheck, Stamp } from "lucide-react";
 import { CustomerSignupForm } from "@/components/loyalty/CustomerSignupForm";
+import { FindCardForm } from "@/components/loyalty/FindCardForm";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -39,6 +40,9 @@ export default async function BusinessSignupPage({
     .maybeSingle();
 
   if (!business) notFound();
+
+  const isPoints = business.loyalty_type === "points";
+  const threshold = isPoints ? business.points_required ?? 100 : business.stamps_required;
 
   return (
     <main className="section-grid min-h-screen bg-[#eef2f7] px-4 py-6">
@@ -84,8 +88,16 @@ export default async function BusinessSignupPage({
                 <Stamp aria-hidden className="h-5 w-5" />
               </div>
               <p className="text-sm font-semibold text-ink">
-                Cumulez <strong>{business.stamps_required} tampon(s)</strong> à chaque passage pour
-                débloquer votre récompense.
+                {isPoints ? (
+                  <>
+                    Cumulez <strong>{threshold} points</strong> pour débloquer votre récompense.
+                  </>
+                ) : (
+                  <>
+                    Cumulez <strong>{threshold} tampon(s)</strong> à chaque passage pour débloquer
+                    votre récompense.
+                  </>
+                )}
               </p>
             </div>
             <div className="flex gap-3 rounded-lg bg-surface-muted p-4">
@@ -109,6 +121,8 @@ export default async function BusinessSignupPage({
         </section>
 
         <CustomerSignupForm businessSlug={business.slug} />
+
+        <FindCardForm businessSlug={business.slug} />
 
         <p className="text-center text-xs text-muted">
           Propulsé par{" "}
