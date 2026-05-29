@@ -21,6 +21,7 @@ export default async function CardsPage({
 }) {
   const params = (await searchParams) ?? {};
   const q = typeof params.q === "string" ? params.q.trim() : "";
+  const cardId = typeof params.card === "string" ? params.card.trim() : "";
   const success = typeof params.success === "string" ? params.success : undefined;
   const error = typeof params.error === "string" ? params.error : undefined;
   const { profile } = await requireAdmin();
@@ -54,23 +55,28 @@ export default async function CardsPage({
   let query = supabase
     .from("loyalty_cards")
     .select(
-      "*, businesses(name,stamps_required), customers(first_name,last_name,phone,email)",
+      "*, businesses(name,stamps_required,loyalty_type,points_required), customers(first_name,last_name,phone,email)",
     )
     .order("created_at", { ascending: false });
 
   if (businessFilter) query = query.eq("business_id", businessFilter);
   if (customerIds) query = query.in("customer_id", customerIds);
+  // Carte scannée (/admin/scan) : on cible directement cette carte. Le filtre
+  // business reste appliqué → on ne peut pas tamponner la carte d'un autre commerce.
+  if (cardId) query = query.eq("id", cardId);
 
   const { data: cards } = await query;
 
   return (
     <AdminShell profile={profile}>
-      <CardsHeader q={q} success={success} error={error} />
+      <CardsHeader q={q} success={success} error={error} scanned={Boolean(cardId)} />
       {cards?.length ? (
         <CardManagementPanel cards={cards} />
       ) : (
         <EmptyState title="Aucune carte trouvée">
-          Créez une carte depuis l&apos;URL publique d&apos;un commerce.
+          {cardId
+            ? "Cette carte n'existe pas ou n'appartient pas à votre commerce."
+            : "Créez une carte depuis l'URL publique d'un commerce."}
         </EmptyState>
       )}
     </AdminShell>
@@ -81,10 +87,12 @@ function CardsHeader({
   q,
   success,
   error,
+  scanned,
 }: {
   q: string;
   success?: string;
   error?: string;
+  scanned?: boolean;
 }) {
   return (
     <div className="mb-6 space-y-6">
@@ -95,6 +103,14 @@ function CardsHeader({
           Ajouter ou retirer des tampons, utiliser une récompense.
         </p>
       </div>
+      {scanned ? (
+        <div className="rounded-lg border border-mint/30 bg-mint-soft px-4 py-3 text-sm font-semibold text-mint">
+          Carte scannée — vous pouvez créditer le tampon ci-dessous.{" "}
+          <a href="/admin/cards" className="underline">
+            Voir toutes les cartes
+          </a>
+        </div>
+      ) : null}
       <ToastBanner success={success} error={error} />
       <form className="grid gap-2 sm:grid-cols-[1fr_auto] sm:max-w-xl">
         <div className="relative">

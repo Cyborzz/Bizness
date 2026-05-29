@@ -32,6 +32,8 @@ export function BusinessForm({ business }: { business?: Business }) {
   const [slug, setSlug] = useState(business?.slug ?? "");
   const [primary, setPrimary] = useState(business?.primary_color ?? "#2454ff");
   const [secondary, setSecondary] = useState(business?.secondary_color ?? "#7c3aed");
+  const [loyaltyType, setLoyaltyType] = useState(business?.loyalty_type ?? "stamps");
+  const isPoints = loyaltyType === "points";
   const suggestedSlug = useMemo(() => generateSlug(name), [name]);
 
   return (
@@ -193,23 +195,52 @@ export function BusinessForm({ business }: { business?: Business }) {
             <Select
               id="loyalty_type"
               name="loyalty_type"
-              defaultValue={business?.loyalty_type ?? "stamps"}
+              value={loyaltyType}
+              onChange={(event) =>
+                setLoyaltyType(event.target.value as "stamps" | "points")
+              }
             >
               <option value="stamps">Tampons</option>
               <option value="points">Points</option>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="stamps_required">Tampons requis</Label>
-            <Input
-              id="stamps_required"
-              name="stamps_required"
-              type="number"
-              min={1}
-              max={50}
-              defaultValue={business?.stamps_required ?? 10}
-            />
-          </div>
+          {isPoints ? (
+            <div className="space-y-2">
+              <Label htmlFor="points_required">Points pour une récompense</Label>
+              <Input
+                id="points_required"
+                name="points_required"
+                type="number"
+                min={1}
+                max={1000000}
+                defaultValue={business?.points_required ?? 100}
+              />
+              {/* Préserve le seuil tampons même en mode points. */}
+              <input
+                type="hidden"
+                name="stamps_required"
+                value={business?.stamps_required ?? 10}
+              />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Label htmlFor="stamps_required">Tampons requis</Label>
+              <Input
+                id="stamps_required"
+                name="stamps_required"
+                type="number"
+                min={1}
+                max={50}
+                defaultValue={business?.stamps_required ?? 10}
+              />
+              {/* Préserve le seuil points même en mode tampons. */}
+              <input
+                type="hidden"
+                name="points_required"
+                value={business?.points_required ?? 100}
+              />
+            </div>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="reward_label">Libellé récompense</Label>
@@ -220,6 +251,38 @@ export function BusinessForm({ business }: { business?: Business }) {
             placeholder="ex. 1 menu offert"
           />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="stamp_cooldown_minutes">
+            Délai anti-fraude entre deux tampons (minutes)
+          </Label>
+          <Input
+            id="stamp_cooldown_minutes"
+            name="stamp_cooldown_minutes"
+            type="number"
+            min={0}
+            max={1440}
+            defaultValue={business?.stamp_cooldown_minutes ?? 0}
+          />
+          <p className="text-xs text-muted">
+            0 = désactivé. Ex. 30 empêche d&apos;ajouter un 2ᵉ tampon à la même
+            carte avant 30 min (évite les doubles tampons sur un seul passage).
+          </p>
+        </div>
+        <label className="flex items-start gap-3 rounded-lg border border-border bg-surface-muted p-3 text-sm font-semibold text-ink">
+          <input
+            name="birthday_reward_enabled"
+            type="checkbox"
+            defaultChecked={business?.birthday_reward_enabled ?? false}
+            className="mt-0.5 h-4 w-4 accent-primary"
+          />
+          <span>
+            🎂 Offrir une récompense pour l&apos;anniversaire du client
+            <span className="mt-0.5 block text-xs font-normal text-muted">
+              Le client réclame son cadeau depuis sa carte pendant sa semaine
+              d&apos;anniversaire (s&apos;il a renseigné sa date de naissance).
+            </span>
+          </span>
+        </label>
       </fieldset>
 
       <label className="flex items-center gap-3 rounded-lg border border-border bg-surface-muted p-3 text-sm font-semibold text-ink">

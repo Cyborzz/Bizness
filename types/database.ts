@@ -42,6 +42,9 @@ export type Database = {
           business_type: string | null;
           loyalty_type: "stamps" | "points";
           stamps_required: number;
+          points_required: number;
+          stamp_cooldown_minutes: number;
+          birthday_reward_enabled: boolean;
           reward_label: string;
           is_active: boolean;
           created_at: string;
@@ -64,6 +67,9 @@ export type Database = {
           business_type?: string | null;
           loyalty_type?: "stamps" | "points";
           stamps_required?: number;
+          points_required?: number;
+          stamp_cooldown_minutes?: number;
+          birthday_reward_enabled?: boolean;
           reward_label?: string;
           is_active?: boolean;
           created_at?: string;
@@ -154,6 +160,9 @@ export type Database = {
           last_name: string | null;
           phone: string | null;
           email: string | null;
+          birthdate: string | null;
+          birth_month: number | null;
+          birth_day: number | null;
           consent_loyalty: boolean;
           consent_marketing: boolean;
           created_at: string;
@@ -166,12 +175,30 @@ export type Database = {
           last_name?: string | null;
           phone?: string | null;
           email?: string | null;
+          birthdate?: string | null;
           consent_loyalty?: boolean;
           consent_marketing?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["customers"]["Insert"]>;
+      };
+      notification_log: {
+        Row: {
+          id: string;
+          customer_id: string;
+          business_id: string;
+          kind: "birthday" | "almost_there";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          customer_id: string;
+          business_id: string;
+          kind: "birthday" | "almost_there";
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["notification_log"]["Insert"]>;
       };
       leads: {
         Row: {

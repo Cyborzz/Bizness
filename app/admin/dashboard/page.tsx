@@ -1,4 +1,14 @@
-import { Building2, CreditCard, Download, Gift, Stamp, Users } from "lucide-react";
+import {
+  Activity,
+  Building2,
+  CreditCard,
+  Download,
+  Gift,
+  Percent,
+  Repeat,
+  Stamp,
+  Users,
+} from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatCard } from "@/components/admin/StatCard";
 import { StatsChart } from "@/components/admin/StatsChart";
@@ -14,6 +24,7 @@ export const metadata = {
 };
 
 const DAYS = 14;
+const ACTIVE_DAYS = 30;
 
 export default async function DashboardPage() {
   const { profile } = await requireAdmin();
@@ -22,6 +33,9 @@ export default async function DashboardPage() {
 
   const since = new Date();
   since.setDate(since.getDate() - DAYS);
+
+  const since30 = new Date();
+  since30.setDate(since30.getDate() - ACTIVE_DAYS);
 
   let businessesQuery = supabase.from("businesses").select("id", { count: "exact", head: true });
   let customersQuery = supabase.from("customers").select("id", { count: "exact", head: true });
@@ -35,6 +49,19 @@ export default async function DashboardPage() {
     .from("transactions")
     .select("type,created_at")
     .gte("created_at", since.toISOString());
+  let rewardsEarnedQuery = supabase
+    .from("transactions")
+    .select("id", { count: "exact", head: true })
+    .eq("type", "reward_earned");
+  let rewardsRedeemedQuery = supabase
+    .from("transactions")
+    .select("id", { count: "exact", head: true })
+    .eq("type", "reward_redeemed");
+  let activeEventsQuery = supabase
+    .from("transactions")
+    .select("customer_id")
+    .eq("type", "stamp_added")
+    .gte("created_at", since30.toISOString());
 
   if (businessFilter) {
     businessesQuery = businessesQuery.eq("id", businessFilter);
@@ -42,6 +69,9 @@ export default async function DashboardPage() {
     cardsQuery = cardsQuery.eq("business_id", businessFilter);
     transactionsQuery = transactionsQuery.eq("business_id", businessFilter);
     recentTransactionsQuery = recentTransactionsQuery.eq("business_id", businessFilter);
+    rewardsEarnedQuery = rewardsEarnedQuery.eq("business_id", businessFilter);
+    rewardsRedeemedQuery = rewardsRedeemedQuery.eq("business_id", businessFilter);
+    activeEventsQuery = activeEventsQuery.eq("business_id", businessFilter);
   }
 
   const [
@@ -50,16 +80,32 @@ export default async function DashboardPage() {
     { data: cards },
     { data: transactions },
     { data: recent },
+    { count: rewardsEarned },
+    { count: rewardsRedeemed },
+    { data: activeEvents },
   ] = await Promise.all([
     businessesQuery,
     customersQuery,
     cardsQuery,
     transactionsQuery,
     recentTransactionsQuery,
+    rewardsEarnedQuery,
+    rewardsRedeemedQuery,
+    activeEventsQuery,
   ]);
 
   const totalStamps = cards?.reduce((sum, card) => sum + card.total_stamps, 0) ?? 0;
   const rewardsAvailable = cards?.reduce((sum, card) => sum + card.rewards_available, 0) ?? 0;
+
+  // ─── KPIs de rétention (calculés sur l'existant) ───
+  const customers = customerCount ?? 0;
+  const visits30 = activeEvents?.length ?? 0;
+  const activeCustomers = new Set((activeEvents ?? []).map((row) => row.customer_id)).size;
+  const activeRate = customers > 0 ? Math.round((activeCustomers / customers) * 100) : 0;
+  const visitsPerActive = activeCustomers > 0 ? visits30 / activeCustomers : 0;
+  const earned = rewardsEarned ?? 0;
+  const redeemed = rewardsRedeemed ?? 0;
+  const redemptionRate = earned > 0 ? Math.round((redeemed / earned) * 100) : 0;
 
   const buckets = buildDailyBuckets(DAYS);
   for (const row of recent ?? []) {
@@ -133,6 +179,43 @@ export default async function DashboardPage() {
             accent="sun"
           />
         </div>
+
+        <div>
+          <p className="text-xs font-black uppercase tracking-normal text-primary">
+            Rétention
+          </p>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard
+              title="Clients actifs (30j)"
+              value={activeCustomers}
+              hint={`${activeRate} % de votre base de clients`}
+              icon={Activity}
+              accent="mint"
+            />
+            <StatCard
+              title="Taux de rédemption"
+              value={`${redemptionRate} %`}
+              hint={`${redeemed} utilisée(s) sur ${earned} gagnée(s)`}
+              icon={Percent}
+              accent="violet"
+            />
+            <StatCard
+              title="Visites moy. / client actif"
+              value={visitsPerActive.toFixed(1)}
+              hint="passages sur les 30 derniers jours"
+              icon={Repeat}
+              accent="primary"
+            />
+            <StatCard
+              title="Récompenses utilisées"
+              value={redeemed}
+              hint="depuis le lancement"
+              icon={Gift}
+              accent="sun"
+            />
+          </div>
+        </div>
+
         <div className="grid gap-4 lg:grid-cols-3">
           <StatsChart title="Tampons (14j)" points={stampsSeries} accent="#18a77a" />
           <StatsChart title="Inscriptions (14j)" points={cardsSeries} accent="#2454ff" />

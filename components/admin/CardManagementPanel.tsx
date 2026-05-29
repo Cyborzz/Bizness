@@ -8,6 +8,7 @@ import {
 } from "@/app/actions/loyalty";
 import { Button, LinkButton } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/field";
 
 type CardRow = {
   id: string;
@@ -15,7 +16,12 @@ type CardRow = {
   total_stamps: number;
   rewards_available: number;
   status: string;
-  businesses?: { name: string; stamps_required: number } | null;
+  businesses?: {
+    name: string;
+    stamps_required: number;
+    loyalty_type?: "stamps" | "points" | null;
+    points_required?: number | null;
+  } | null;
   customers?: {
     first_name: string;
     last_name: string | null;
@@ -28,7 +34,10 @@ export function CardManagementPanel({ cards }: { cards: CardRow[] }) {
   return (
     <div className="grid gap-4">
       {cards.map((card) => {
-        const required = card.businesses?.stamps_required ?? 10;
+        const isPoints = card.businesses?.loyalty_type === "points";
+        const required = isPoints
+          ? card.businesses?.points_required ?? 100
+          : card.businesses?.stamps_required ?? 10;
         const progressPercent = Math.min((card.current_stamps / required) * 100, 100);
         const hasReward = card.rewards_available > 0;
 
@@ -94,11 +103,22 @@ export function CardManagementPanel({ cards }: { cards: CardRow[] }) {
               </div>
             </div>
             <div className="grid gap-2 border-t border-border bg-surface-muted/40 p-4 sm:grid-cols-[1fr_1fr_1fr_auto]">
-              <form action={addStampAction}>
+              <form action={addStampAction} className={isPoints ? "flex gap-2" : ""}>
                 <input type="hidden" name="cardId" value={card.id} />
+                {isPoints ? (
+                  <Input
+                    name="amount"
+                    type="number"
+                    min={1}
+                    defaultValue={10}
+                    aria-label="Points à créditer"
+                    className="w-24"
+                    disabled={card.status !== "active"}
+                  />
+                ) : null}
                 <Button type="submit" className="w-full" disabled={card.status !== "active"}>
                   <Plus aria-hidden className="h-4 w-4" />
-                  +1 tampon
+                  {isPoints ? "Créditer" : "+1 tampon"}
                 </Button>
               </form>
               <form action={removeStampAction}>
@@ -110,7 +130,7 @@ export function CardManagementPanel({ cards }: { cards: CardRow[] }) {
                   disabled={card.status !== "active" || card.current_stamps === 0}
                 >
                   <Minus aria-hidden className="h-4 w-4" />
-                  -1 tampon
+                  {isPoints ? "-1 point" : "-1 tampon"}
                 </Button>
               </form>
               <form action={redeemRewardAction}>

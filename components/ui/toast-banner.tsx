@@ -19,6 +19,8 @@ const errorMessages: Record<string, string> = {
   "invalid-card": "Carte invalide.",
   "card-unavailable": "Carte introuvable ou inactive.",
   "no-stamp": "Aucun tampon à retirer.",
+  "stamp-cooldown":
+    "Tampon déjà ajouté récemment à cette carte. Patientez avant le prochain.",
   "no-reward": "Aucune récompense disponible.",
   "invalid-customer": "Client invalide.",
   "access-denied": "Accès refusé.",

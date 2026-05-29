@@ -81,7 +81,8 @@ export function CardScanner() {
             const match = value.match(CARD_PATH_RE);
             if (match) {
               stopCamera();
-              router.push(`/card/${match[1]}`);
+              // Vers la gestion de la carte (boutons tampon), pas la vue publique.
+              router.push(`/admin/cards?card=${match[1]}`);
               return;
             }
           }

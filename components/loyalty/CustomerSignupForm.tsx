@@ -89,6 +89,15 @@ export function CustomerSignupForm({ businessSlug }: { businessSlug: string }) {
         </div>
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="birthdate">Date de naissance (optionnel) 🎂</Label>
+        <Input id="birthdate" name="birthdate" type="date" autoComplete="bday" />
+        <p className="text-xs text-muted">
+          Pour recevoir une récompense le jour de votre anniversaire, si le
+          commerce le propose.
+        </p>
+      </div>
+
       <FieldHint>
         Téléphone ou email obligatoire. Vos informations sont utilisées uniquement pour gérer
         votre carte fidélité. Vous pouvez demander la suppression à tout moment.

@@ -15,7 +15,9 @@ async function loadCard(cardId: string) {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("loyalty_cards")
-    .select("*, businesses(stamps_required), customers(id)")
+    .select(
+      "*, businesses(stamps_required,stamp_cooldown_minutes,loyalty_type,points_required), customers(id)",
+    )
     .eq("id", cardId)
     .single();
 
@@ -41,12 +43,40 @@ export async function addStampAction(formData: FormData) {
   const { user, card } = await assertCardAccess(parsed.data.cardId);
   if (!card || card.status !== "active") redirect("/admin/cards?error=card-unavailable");
 
-  const required = card.businesses?.stamps_required ?? 10;
-  const nextCurrent = card.current_stamps + 1;
-  const rewardEarned = nextCurrent >= required;
-  const current_stamps = rewardEarned ? 0 : nextCurrent;
-  const rewards_available = card.rewards_available + (rewardEarned ? 1 : 0);
-  const total_stamps = card.total_stamps + 1;
+  const supabaseGuard = createAdminClient();
+  const cooldownMinutes = card.businesses?.stamp_cooldown_minutes ?? 0;
+  if (cooldownMinutes > 0) {
+    const since = new Date(Date.now() - cooldownMinutes * 60_000).toISOString();
+    const { data: recentStamp } = await supabaseGuard
+      .from("transactions")
+      .select("id")
+      .eq("card_id", card.id)
+      .eq("type", "stamp_added")
+      .gte("created_at", since)
+      .limit(1);
+    if (recentStamp && recentStamp.length > 0) {
+      redirect("/admin/cards?error=stamp-cooldown");
+    }
+  }
+
+  // Crédit unifié tampons/points : on ajoute `amount` (1 pour un tampon, le
+  // montant saisi pour des points), on débloque autant de récompenses que le
+  // seuil est franchi, et on reporte le reste (gère aussi le multi-récompense).
+  const isPoints = card.businesses?.loyalty_type === "points";
+  const threshold = Math.max(
+    1,
+    isPoints ? card.businesses?.points_required ?? 100 : card.businesses?.stamps_required ?? 10,
+  );
+  const rawAmount = Number(formData.get("amount"));
+  const amount = isPoints
+    ? Math.min(1_000_000, Math.max(1, Math.floor(Number.isFinite(rawAmount) ? rawAmount : 1)))
+    : 1;
+
+  const totalNow = card.current_stamps + amount;
+  const rewardsEarned = Math.floor(totalNow / threshold);
+  const current_stamps = totalNow % threshold;
+  const rewards_available = card.rewards_available + rewardsEarned;
+  const total_stamps = card.total_stamps + amount;
   const supabase = createAdminClient();
 
   await supabase
@@ -60,17 +90,17 @@ export async function addStampAction(formData: FormData) {
       customer_id: card.customer_id,
       card_id: card.id,
       type: "stamp_added",
-      value: 1,
+      value: amount,
       created_by: user.id,
     },
-    ...(rewardEarned
+    ...(rewardsEarned > 0
       ? [
           {
             business_id: card.business_id,
             customer_id: card.customer_id,
             card_id: card.id,
             type: "reward_earned" as const,
-            value: 1,
+            value: rewardsEarned,
             note: "Récompense débloquée automatiquement",
             created_by: user.id,
           },

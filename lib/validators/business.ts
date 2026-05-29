@@ -44,6 +44,9 @@ export const businessSchema = z.object({
   business_type: optionalString,
   loyalty_type: z.enum(["stamps", "points"]).default("stamps"),
   stamps_required: z.coerce.number().int().min(1).max(50),
+  points_required: z.coerce.number().int().min(1).max(1_000_000).default(100),
+  stamp_cooldown_minutes: z.coerce.number().int().min(0).max(1440).default(0),
+  birthday_reward_enabled: z.coerce.boolean().default(false),
   reward_label: z.string().trim().min(2, "Récompense requise"),
   is_active: z.coerce.boolean().default(false),
 });
