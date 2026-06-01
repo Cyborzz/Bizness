@@ -15,7 +15,7 @@ function SubmitButton() {
   return (
     <Button disabled={pending} size="lg">
       <Send aria-hidden className="h-4 w-4" />
-      {pending ? "Envoi…" : "Envoyer l'invitation"}
+      {pending ? "Envoi..." : "Envoyer l'invitation"}
     </Button>
   );
 }
@@ -44,19 +44,37 @@ export function InviteMemberForm({
           {state.error}
         </div>
       ) : null}
+
+      {state.success ? (
+        <div
+          role="status"
+          className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm font-semibold text-emerald-900"
+        >
+          <p>{state.success}</p>
+          {state.email && state.temporaryPassword ? (
+            <div className="mt-3 rounded-lg bg-white/70 p-3 font-mono text-xs text-ink">
+              <p>Email: {state.email}</p>
+              <p>Mot de passe temporaire: {state.temporaryPassword}</p>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input id="email" name="email" type="email" required placeholder="staff@commerce.fr" />
       </div>
+
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="role">Rôle</Label>
+          <Label htmlFor="role">Role</Label>
           <Select id="role" name="role" defaultValue="staff" required>
             {isSuper ? <option value="super_admin">Super admin</option> : null}
             {isSuper ? <option value="business_owner">Owner</option> : null}
             <option value="staff">Staff</option>
           </Select>
         </div>
+
         {isSuper ? (
           <div className="space-y-2">
             <Label htmlFor="business_id">Commerce (optionnel pour super admin)</Label>
@@ -70,17 +88,15 @@ export function InviteMemberForm({
             </Select>
           </div>
         ) : (
-          <input
-            type="hidden"
-            name="business_id"
-            value={profile.business_id ?? ""}
-          />
+          <input type="hidden" name="business_id" value={profile.business_id ?? ""} />
         )}
       </div>
+
       <p className="text-xs text-muted">
-        Un email d&apos;invitation est envoyé par Supabase. La personne définit son mot de passe en
-        cliquant sur le lien.
+        Un email d&apos;invitation est envoye si le SMTP est configure. Sinon, un mot de passe
+        temporaire est affiche ici pour creer le compte tout de suite.
       </p>
+
       <div className="flex justify-end">
         <SubmitButton />
       </div>

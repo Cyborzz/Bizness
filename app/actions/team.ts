@@ -7,7 +7,12 @@ import { requireAdmin } from "@/lib/auth/queries";
 import { canAccessBusiness } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export type InviteState = { error?: string };
+export type InviteState = {
+  error?: string;
+  success?: string;
+  email?: string;
+  temporaryPassword?: string;
+};
 
 const inviteSchema = z.object({
   email: z.string().trim().email("Email invalide"),
@@ -40,7 +45,6 @@ export async function inviteMemberAction(
     return { error: parsed.error.issues[0]?.message ?? "Formulaire invalide" };
   }
 
-  // Un super_admin peut créer n'importe quel rôle. Un owner ne peut créer que du staff dans son business.
   if (profile.role === "business_owner") {
     if (parsed.data.role !== "staff") {
       return { error: "Un owner ne peut inviter que du staff." };
@@ -52,14 +56,15 @@ export async function inviteMemberAction(
 
   const businessId = parsed.data.business_id ?? profile.business_id ?? null;
   if (parsed.data.role !== "super_admin" && !businessId) {
-    return { error: "Un commerce est requis pour ce rôle." };
+    return { error: "Un commerce est requis pour ce role." };
   }
   if (businessId && !canAccessBusiness(profile, businessId)) {
-    return { error: "Accès au commerce refusé." };
+    return { error: "Acces au commerce refuse." };
   }
 
   const supabase = createAdminClient();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const roleBusinessId = parsed.data.role === "super_admin" ? null : businessId;
 
   const { data: inviteResult, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(
     parsed.data.email,
@@ -68,31 +73,101 @@ export async function inviteMemberAction(
     },
   );
 
-  if (inviteError || !inviteResult?.user) {
+  if (!inviteError && inviteResult?.user) {
+    const profileError = await upsertMemberProfile(
+      inviteResult.user.id,
+      parsed.data.email,
+      parsed.data.role,
+      roleBusinessId,
+    );
+
+    if (profileError) {
+      return { error: "Invitation envoyee mais l'attribution du role a echoue." };
+    }
+
+    revalidatePath("/admin/team");
+    redirect("/admin/team?success=staff-invited");
+  }
+
+  if (inviteError?.message?.toLowerCase().includes("already")) {
     return {
-      error:
-        inviteError?.message?.includes("already")
-          ? "Cet email existe déjà dans Auth. Modifiez directement son rôle dans Supabase."
-          : "Impossible d'envoyer l'invitation. Vérifiez la config SMTP Supabase.",
+      error: "Cet email existe deja dans Auth. Connectez-vous avec ce compte ou utilisez un autre email.",
     };
   }
 
-  const { error: profileError } = await supabase.from("admin_users").upsert(
-    {
-      id: inviteResult.user.id,
-      email: parsed.data.email,
-      role: parsed.data.role,
-      business_id: parsed.data.role === "super_admin" ? null : businessId,
-    },
-    { onConflict: "id" },
+  const temporaryPassword = generateTemporaryPassword();
+  const { data: created, error: createError } = await supabase.auth.admin.createUser({
+    email: parsed.data.email,
+    password: temporaryPassword,
+    email_confirm: true,
+  });
+  let userId = created?.user?.id ?? null;
+
+  if (!userId && createError?.message?.toLowerCase().includes("already")) {
+    const { data: users } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    const existing = users.users.find(
+      (user) => user.email?.toLowerCase() === parsed.data.email.toLowerCase(),
+    );
+    if (existing) {
+      const { error: updateError } = await supabase.auth.admin.updateUserById(existing.id, {
+        password: temporaryPassword,
+        email_confirm: true,
+      });
+      if (!updateError) {
+        userId = existing.id;
+      }
+    }
+  }
+
+  if (!userId) {
+    return {
+      error:
+        "Invitation email impossible et creation manuelle impossible. Verifiez la configuration Auth.",
+    };
+  }
+
+  const profileError = await upsertMemberProfile(
+    userId,
+    parsed.data.email,
+    parsed.data.role,
+    roleBusinessId,
   );
 
   if (profileError) {
-    return { error: "Invitation envoyée mais l'attribution du rôle a échoué." };
+    return { error: "Compte cree mais l'attribution du role a echoue." };
   }
 
   revalidatePath("/admin/team");
-  redirect("/admin/team?success=staff-invited");
+  return {
+    success: "SMTP non configure : le compte a ete cree avec un mot de passe temporaire.",
+    email: parsed.data.email,
+    temporaryPassword,
+  };
+}
+
+function generateTemporaryPassword() {
+  return `${crypto.randomUUID().replaceAll("-", "")}${crypto
+    .randomUUID()
+    .replaceAll("-", "")}`.slice(0, 24);
+}
+
+async function upsertMemberProfile(
+  id: string,
+  email: string,
+  role: "super_admin" | "business_owner" | "staff",
+  businessId: string | null,
+) {
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("admin_users").upsert(
+    {
+      id,
+      email,
+      role,
+      business_id: businessId,
+    },
+    { onConflict: "id" },
+  );
+  return error;
 }
 
 export async function removeMemberAction(formData: FormData) {
