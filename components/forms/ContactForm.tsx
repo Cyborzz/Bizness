@@ -78,7 +78,7 @@ export function ContactForm() {
         />
       </div>
       <FieldHint>
-        En envoyant ce formulaire, vous acceptez d&apos;être recontacté par l&apos;équipe FideliQR.
+        En envoyant ce formulaire, vous acceptez d&apos;être recontacté par l&apos;équipe Fidélise-moi.
       </FieldHint>
       <SubmitButton />
     </form>

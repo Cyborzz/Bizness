@@ -1,6 +1,6 @@
-// FideliQR service worker — Web Push + offline fallback.
+// Fidélise-moi service worker — Web Push + offline fallback.
 
-const CACHE_NAME = "fideliqr-v1";
+const CACHE_NAME = "fidelise-moi-v1";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {
@@ -30,7 +30,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  let payload = { title: "FideliQR", body: "Vous avez une nouvelle offre.", url: "/" };
+  let payload = { title: "Fidélise-moi", body: "Vous avez une nouvelle offre.", url: "/" };
   try {
     if (event.data) {
       payload = { ...payload, ...event.data.json() };

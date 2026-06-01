@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, QrCode, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { BrandMark } from "@/components/brand/BrandMark";
 import { Button, LinkButton } from "@/components/ui/button";
+import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils/cn";
 
 const nav = [
@@ -52,14 +54,14 @@ export function PublicNav() {
           href="/"
           className="group flex items-center gap-3 text-base font-black tracking-normal text-ink"
         >
-          <span className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-ink text-white shadow-lg shadow-gray-950/15 transition group-hover:rotate-6">
-            <QrCode aria-hidden className="h-5 w-5" />
-            <span className="pointer-events-none absolute inset-0 rounded-lg ring-2 ring-primary/0 transition group-hover:ring-primary/30" />
-          </span>
+          <BrandMark
+            size={40}
+            className="shadow-lg shadow-gray-950/15 transition group-hover:rotate-6"
+          />
           <span className="hidden sm:block">
-            FideliQR
+            {BRAND.name}
             <span className="block text-[11px] font-bold uppercase tracking-normal text-muted">
-              Loyalty OS
+              {BRAND.tagline}
             </span>
           </span>
         </Link>

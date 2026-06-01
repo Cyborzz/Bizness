@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CreditCard, ExternalLink, Stamp, Users } from "lucide-react";
+import { ArrowLeft, CreditCard, ExternalLink, Printer, Stamp, Users } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { BusinessForm } from "@/components/admin/BusinessForm";
 import { QRCodeCard } from "@/components/admin/QRCodeCard";
@@ -78,14 +78,23 @@ export default async function BusinessDetailPage({
               {business.name}
             </h1>
           </div>
-          <Link
-            href={`/c/${business.slug}`}
-            target="_blank"
-            className="focus-ring btn-press inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-ink ring-1 ring-border transition hover:bg-surface-muted"
-          >
-            <ExternalLink aria-hidden className="h-4 w-4" />
-            Ouvrir la page publique
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/admin/businesses/${business.id}/affiche`}
+              className="focus-ring btn-press inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-ink px-4 text-sm font-semibold text-white transition hover:bg-ink/90"
+            >
+              <Printer aria-hidden className="h-4 w-4" />
+              Affiche comptoir
+            </Link>
+            <Link
+              href={`/c/${business.slug}`}
+              target="_blank"
+              className="focus-ring btn-press inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-ink ring-1 ring-border transition hover:bg-surface-muted"
+            >
+              <ExternalLink aria-hidden className="h-4 w-4" />
+              Ouvrir la page publique
+            </Link>
+          </div>
         </div>
         <ToastBanner success={success} error={error} />
         <div className="grid gap-4 sm:grid-cols-3">

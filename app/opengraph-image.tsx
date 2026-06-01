@@ -1,7 +1,8 @@
 import { ImageResponse } from "next/og";
+import { BRAND } from "@/lib/brand";
 
 export const alt =
-  "FideliQR — Carte fidélité digitale pour commerces locaux";
+  "Fidélise-moi — Carte fidélité digitale pour commerces locaux";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -36,17 +37,33 @@ export default function OpenGraphImage() {
               height: 52,
               borderRadius: 12,
               background: "#fff",
-              color: "#0a0f1f",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontWeight: 900,
-              fontSize: 28,
             }}
           >
-            F
+            <svg width="38" height="38" viewBox="0 0 48 48" fill="none">
+              <circle
+                cx="24"
+                cy="23"
+                r="11.5"
+                fill="none"
+                stroke={BRAND.colors.ink}
+                strokeWidth="2.4"
+                strokeDasharray="3.2 3.4"
+                strokeLinecap="round"
+              />
+              <path
+                d="M18.6 23.4 L22.4 27.2 L30 18.6"
+                fill="none"
+                stroke={BRAND.colors.primary}
+                strokeWidth="3.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </div>
-          <span>FideliQR</span>
+          <span>{BRAND.name}</span>
         </div>
         <div
           style={{
@@ -74,7 +91,7 @@ export default function OpenGraphImage() {
           }}
         >
           <span>QR code · Carte mobile · Sans application</span>
-          <span style={{ color: "#fff", fontWeight: 700 }}>fideliqr.com</span>
+          <span style={{ color: "#fff", fontWeight: 700 }}>{BRAND.domain}</span>
         </div>
       </div>
     ),

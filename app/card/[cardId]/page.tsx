@@ -151,7 +151,7 @@ export default async function CustomerCardPage({
         <p className="text-center text-xs text-muted">
           Propulsé par{" "}
           <Link href="/" className="font-bold text-ink hover:underline">
-            FideliQR
+            Fidélise-moi
           </Link>{" "}
           ·{" "}
           <Link href={`/c/${business.slug}`} className="hover:underline">

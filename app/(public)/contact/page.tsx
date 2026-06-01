@@ -6,7 +6,7 @@ import { Reveal } from "@/components/ui/reveal";
 
 export const metadata = {
   title: "Contact",
-  description: "Demandez une démonstration de la carte fidélité digitale FideliQR.",
+  description: "Demandez une démonstration de la carte fidélité digitale Fidélise-moi.",
 };
 
 export default function ContactPage() {

@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
+import { BRAND } from "@/lib/brand";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "FideliQR — Carte fidélité",
-    short_name: "FideliQR",
+    name: `${BRAND.name} — Carte fidélité`,
+    short_name: BRAND.name,
     description:
       "Votre carte fidélité digitale, sans application à télécharger.",
     start_url: "/",

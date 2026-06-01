@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { Mail, QrCode } from "lucide-react";
+import { Mail } from "lucide-react";
+import { BrandMark } from "@/components/brand/BrandMark";
+import { BRAND } from "@/lib/brand";
 
 const productLinks = [
   { href: "/demo", label: "Démo interactive" },
@@ -18,13 +20,11 @@ export function PublicFooter() {
       <div className="container-page grid gap-10 py-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="max-w-md">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-ink text-white">
-              <QrCode aria-hidden className="h-5 w-5" />
-            </span>
+            <BrandMark size={40} />
             <div>
-              <p className="font-black text-ink">FideliQR</p>
+              <p className="font-black text-ink">{BRAND.name}</p>
               <p className="text-xs font-bold uppercase tracking-normal text-muted-2">
-                Loyalty OS local
+                {BRAND.tagline}
               </p>
             </div>
           </div>
@@ -33,11 +33,11 @@ export function PublicFooter() {
             tester vite et apprendre avec les premiers clients.
           </p>
           <a
-            href="mailto:hello@fideliqr.com"
+            href={`mailto:${BRAND.email}`}
             className="mt-5 inline-flex items-center gap-2 rounded-full border border-border bg-surface-muted px-3 py-1.5 text-xs font-bold text-ink"
           >
             <Mail aria-hidden className="h-3.5 w-3.5" />
-            hello@fideliqr.com
+            {BRAND.email}
           </a>
         </div>
 
@@ -78,7 +78,7 @@ export function PublicFooter() {
       </div>
       <div className="border-t border-border">
         <div className="container-page flex flex-col items-center justify-between gap-3 py-5 text-xs text-muted sm:flex-row">
-          <p>© {new Date().getFullYear()} FideliQR. Tous droits réservés.</p>
+          <p>© {new Date().getFullYear()} {BRAND.name}. Tous droits réservés.</p>
           <p>Construit avec Next.js, Supabase et beaucoup de café ☕</p>
         </div>
       </div>

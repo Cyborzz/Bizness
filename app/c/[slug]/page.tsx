@@ -127,7 +127,7 @@ export default async function BusinessSignupPage({
         <p className="text-center text-xs text-muted">
           Propulsé par{" "}
           <Link href="/" className="font-bold text-ink hover:underline">
-            FideliQR
+            Fidélise-moi
           </Link>
         </p>
       </div>

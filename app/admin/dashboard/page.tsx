@@ -7,6 +7,7 @@ import {
   Percent,
   Repeat,
   Stamp,
+  UserPlus,
   Users,
 } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -107,6 +108,23 @@ export default async function DashboardPage() {
   const redeemed = rewardsRedeemed ?? 0;
   const redemptionRate = earned > 0 ? Math.round((redeemed / earned) * 100) : 0;
 
+  // ─── Croissance : nouveaux clients sur 7j vs 7j précédents ───
+  const day7 = new Date();
+  day7.setDate(day7.getDate() - 7);
+  let newCustomers7 = 0;
+  let newCustomersPrev7 = 0;
+  for (const row of recent ?? []) {
+    if (row.type !== "card_created") continue;
+    if (new Date(row.created_at) >= day7) newCustomers7 += 1;
+    else newCustomersPrev7 += 1;
+  }
+  const newCustomersTrend =
+    newCustomersPrev7 > 0
+      ? Math.round(((newCustomers7 - newCustomersPrev7) / newCustomersPrev7) * 100)
+      : newCustomers7 > 0
+        ? 100
+        : null;
+
   const buckets = buildDailyBuckets(DAYS);
   for (const row of recent ?? []) {
     const day = bucketKey(new Date(row.created_at));
@@ -152,7 +170,7 @@ export default async function DashboardPage() {
             </LinkButton>
           </div>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <StatCard
             title="Commerces"
             value={businessCount ?? 0}
@@ -160,6 +178,14 @@ export default async function DashboardPage() {
             accent="primary"
           />
           <StatCard title="Clients" value={customerCount ?? 0} icon={Users} accent="violet" />
+          <StatCard
+            title="Nouveaux clients (7j)"
+            value={newCustomers7}
+            trend={newCustomersTrend}
+            hint="vs 7 jours précédents"
+            icon={UserPlus}
+            accent="dark"
+          />
           <StatCard
             title="Cartes créées"
             value={cards?.length ?? 0}

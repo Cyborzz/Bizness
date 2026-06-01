@@ -5,7 +5,7 @@ export function getVapidPublicKey() {
 export function getServerVapid() {
   const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const privateKey = process.env.VAPID_PRIVATE_KEY;
-  const subject = process.env.VAPID_SUBJECT || "mailto:hello@fideliqr.com";
+  const subject = process.env.VAPID_SUBJECT || "mailto:hello@fidelise-moi.fr";
 
   if (!publicKey || !privateKey) {
     return null;

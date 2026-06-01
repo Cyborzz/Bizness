@@ -1,0 +1,8 @@
+fidelise-moi.fr {
+  encode zstd gzip
+  reverse_proxy app:3000
+}
+
+www.fidelise-moi.fr {
+  redir https://fidelise-moi.fr{uri} permanent
+}

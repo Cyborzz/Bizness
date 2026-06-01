@@ -1,6 +1,6 @@
 # Intégration Apple Wallet & Google Wallet (V2)
 
-Cette doc décrit comment ajouter le support **Apple Wallet (.pkpass)** et **Google Wallet (Loyalty Card)** à FideliQR. Ces formats supportent nativement les **notifications géolocalisées** déclenchées par l'OS — la vraie solution à « ping le client quand il passe à 1km ».
+Cette doc décrit comment ajouter le support **Apple Wallet (.pkpass)** et **Google Wallet (Loyalty Card)** à Fidélise-moi. Ces formats supportent nativement les **notifications géolocalisées** déclenchées par l'OS — la vraie solution à « ping le client quand il passe à 1km ».
 
 ---
 
@@ -27,7 +27,7 @@ Cette doc décrit comment ajouter le support **Apple Wallet (.pkpass)** et **Goo
 
 ### Variables d'environnement à ajouter
 ```bash
-APPLE_PASS_TYPE_ID=pass.com.fideliqr.loyalty
+APPLE_PASS_TYPE_ID=pass.com.fidelisemoi.loyalty
 APPLE_TEAM_ID=ABCDE12345
 APPLE_PASS_CERTIFICATE_BASE64=...   # contenu de .p12 base64
 APPLE_PASS_CERTIFICATE_PASSWORD=
@@ -98,7 +98,7 @@ Un job Supabase Edge Function ou un cron Vercel peut aussi mettre à jour en bat
 
 ## Quand passer à un vrai app natif ?
 
-Si FideliQR doit :
+Si Fidélise-moi doit :
 - Personnaliser les rayons par client/segment dynamiquement
 - Combiner géoloc + plages horaires personnalisées
 - Notifier plus de 10 lieux par carte

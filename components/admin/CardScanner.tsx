@@ -163,7 +163,7 @@ export function CardScanner() {
 
       {lastValue && !lastValue.match(CARD_PATH_RE) ? (
         <p className="rounded-lg border border-border bg-surface-muted p-3 text-sm font-semibold text-muted">
-          QR détecté mais pas une carte FideliQR : <span className="font-mono">{lastValue}</span>
+          QR détecté mais pas une carte Fidélise-moi : <span className="font-mono">{lastValue}</span>
         </p>
       ) : null}
 

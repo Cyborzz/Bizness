@@ -1,5 +1,5 @@
 -- ════════════════════════════════════════════════════════════════════════
--- FideliQR — Bundle migrations 003 → 007 (à coller dans l'éditeur SQL Supabase)
+-- Fidélise-moi — Bundle migrations 003 → 007 (à coller dans l'éditeur SQL Supabase)
 -- ════════════════════════════════════════════════════════════════════════
 -- Regroupe les 5 migrations de la PR "rétention & robustesse".
 -- Idempotent : ré-exécutable sans risque (if not exists / drop if exists).

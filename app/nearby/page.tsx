@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Près de vous",
-  description: "Trouvez les commerces FideliQR autour de vous.",
+  description: "Trouvez les commerces Fidélise-moi autour de vous.",
 };
 
 export default async function NearbyPage() {
@@ -75,7 +75,7 @@ export default async function NearbyPage() {
             </div>
           </div>
           <p className="mt-4 text-muted">
-            Autorisez la géolocalisation : on vous montre les commerces FideliQR à proximité et
+            Autorisez la géolocalisation : on vous montre les commerces Fidélise-moi à proximité et
             leurs offres en cours. Vos coordonnées ne sont jamais stockées.
           </p>
           <div className="mt-6">

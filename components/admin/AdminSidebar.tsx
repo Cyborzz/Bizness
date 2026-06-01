@@ -12,11 +12,12 @@ import {
   LayoutDashboard,
   ListChecks,
   Menu,
-  QrCode,
   Settings,
   Users,
   X,
 } from "lucide-react";
+import { BrandMark } from "@/components/brand/BrandMark";
+import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils/cn";
 
 const links = [
@@ -94,11 +95,9 @@ export function AdminSidebar() {
       >
         <div className="flex h-20 items-center justify-between px-4">
           <Link href="/admin/dashboard" className="flex items-center gap-3 font-black">
-            <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-ink">
-              <QrCode aria-hidden className="h-5 w-5" />
-            </span>
+            <BrandMark size={44} className="ring-1 ring-white/15" />
             <span>
-              FideliQR
+              {BRAND.name}
               <span className="block text-[11px] font-bold uppercase tracking-normal text-white/50">
                 Back office
               </span>

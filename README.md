@@ -1,4 +1,4 @@
-# FideliQR — Carte fidélité digitale SaaS
+# Fidélise-moi — Carte fidélité digitale SaaS
 
 MVP Next.js 16 / Supabase pour vendre rapidement une carte fidélité digitale aux commerces locaux. Le client scanne un QR code, crée sa carte sur mobile, cumule des tampons et consulte ses récompenses.
 
@@ -36,7 +36,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 # Générer une fois : npx web-push generate-vapid-keys
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
-VAPID_SUBJECT=mailto:hello@fideliqr.com
+VAPID_SUBJECT=mailto:hello@fidelise-moi.fr
 
 # V2 — Stripe (compte stripe.com requis)
 STRIPE_SECRET_KEY=
@@ -45,7 +45,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 
 # V2 — Email transactionnel (Resend recommandé)
 RESEND_API_KEY=
-RESEND_FROM=hello@fideliqr.com
+RESEND_FROM=hello@fidelise-moi.fr
 ```
 
 > ⚠️ `SUPABASE_SERVICE_ROLE_KEY` reste uniquement côté serveur. Ne jamais l'exposer dans un composant client.
@@ -104,7 +104,7 @@ URLs :
 6. **Présenter** le téléphone (ou le prénom) au passage suivant
 7. **Page d'aide** : `/card/[id]/aide` (installation, FAQ, RGPD)
 8. **Suppression données** : `/card/[id]/supprimer` (workflow RGPD)
-9. **Près de vous** : `/nearby` montre les commerces FideliQR à 1.5 km
+9. **Près de vous** : `/nearby` montre les commerces Fidélise-moi à 1.5 km
 
 ## Rôles & permissions
 
