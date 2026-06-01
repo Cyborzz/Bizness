@@ -9,7 +9,7 @@ export function AdminShell({ profile, children }: { profile: AdminProfile; child
       <AdminSidebar />
       <div className="min-w-0 flex-1">
         <AdminHeader profile={profile} />
-        <main className="p-4 pt-16 sm:p-6 lg:p-8 lg:pt-8">{children}</main>
+        <main className="p-4 pb-28 pt-16 sm:p-6 sm:pb-28 lg:p-8 lg:pt-8">{children}</main>
       </div>
     </div>
   );

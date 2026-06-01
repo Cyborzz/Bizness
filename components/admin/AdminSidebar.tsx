@@ -66,6 +66,36 @@ function NavLinks({ pathname }: { pathname: string }) {
   );
 }
 
+const mobileLinks = links.filter((link) =>
+  ["/admin/dashboard", "/admin/scan", "/admin/cards", "/admin/customers"].includes(link.href),
+);
+
+function MobileQuickNav({ pathname }: { pathname: string }) {
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-border bg-white px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0_-10px_30px_rgba(15,23,42,0.12)] lg:hidden">
+      {mobileLinks.map((link) => {
+        const Icon = link.icon;
+        const isActive =
+          pathname === link.href || pathname.startsWith(`${link.href}/`);
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cn(
+              "flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-2 text-[11px] font-black",
+              isActive ? "bg-primary-soft text-primary-dark" : "text-muted",
+            )}
+            aria-current={isActive ? "page" : undefined}
+          >
+            <Icon aria-hidden className="h-5 w-5" />
+            <span className="truncate">{link.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
 export function AdminSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -134,6 +164,8 @@ export function AdminSidebar() {
           className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
         />
       ) : null}
+
+      <MobileQuickNav pathname={pathname} />
     </>
   );
 }
