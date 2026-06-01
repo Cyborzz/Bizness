@@ -6,6 +6,8 @@ BRANCH="${BRANCH:-main}"
 GITHUB_KEY="${GITHUB_KEY:-$HOME/.ssh/github_bizness}"
 FORCE_DEPLOY="${FORCE_DEPLOY:-0}"
 
+export COMPOSE_BAKE=false
+
 cd "$APP_DIR"
 
 if [ ! -f .env.production ]; then
