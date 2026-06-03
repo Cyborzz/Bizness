@@ -210,8 +210,14 @@ export async function deleteCustomerAction(formData: FormData) {
     });
   }
 
-  await supabase.from("customers").delete().eq("id", customer.id);
+  const { error } = await supabase.from("customers").delete().eq("id", customer.id);
+  if (error) {
+    redirect("/admin/customers?error=customer-delete-failed");
+  }
+
   revalidatePath("/admin/customers");
+  revalidatePath("/admin/cards");
+  revalidatePath("/admin/dashboard");
   redirect("/admin/customers?success=customer-deleted");
 }
 

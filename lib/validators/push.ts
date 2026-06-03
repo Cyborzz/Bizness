@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { postgresUuid } from "@/lib/validators/uuid";
 
 export const pushSubscribeSchema = z.object({
-  cardId: z.string().uuid("Carte invalide"),
+  cardId: postgresUuid("Carte invalide"),
   endpoint: z.string().url("Endpoint invalide"),
   p256dh: z.string().min(1),
   auth_key: z.string().min(1),
@@ -13,7 +14,7 @@ export const pushUnsubscribeSchema = z.object({
 });
 
 export const offerSchema = z.object({
-  business_id: z.string().uuid(),
+  business_id: postgresUuid("Commerce invalide"),
   title: z.string().trim().min(2, "Titre requis").max(80, "Maximum 80 caractères"),
   body: z.string().trim().min(2, "Message requis").max(280, "Maximum 280 caractères"),
   image_url: z

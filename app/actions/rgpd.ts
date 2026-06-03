@@ -6,11 +6,12 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/queries";
 import { canAccessBusiness } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { postgresUuid } from "@/lib/validators/uuid";
 
 export type DeletionRequestState = { error?: string; ok?: boolean };
 
 const requestSchema = z.object({
-  cardId: z.string().uuid("Carte invalide"),
+  cardId: postgresUuid("Carte invalide"),
   reason: z
     .string()
     .trim()

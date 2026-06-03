@@ -6,6 +6,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/queries";
 import { canAccessBusiness } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { postgresUuid } from "@/lib/validators/uuid";
 
 export type InviteState = {
   error?: string;
@@ -22,7 +23,7 @@ const inviteSchema = z.object({
     .trim()
     .optional()
     .transform((value) => value || null)
-    .pipe(z.string().uuid("Commerce invalide").nullable()),
+    .pipe(postgresUuid("Commerce invalide").nullable()),
 });
 
 export async function inviteMemberAction(

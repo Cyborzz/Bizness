@@ -24,6 +24,7 @@ const errorMessages: Record<string, string> = {
     "Tampon déjà ajouté récemment à cette carte. Patientez avant le prochain.",
   "no-reward": "Aucune récompense disponible.",
   "invalid-customer": "Client invalide.",
+  "customer-delete-failed": "Suppression du client impossible.",
   "access-denied": "Accès refusé.",
   "invalid-business": "Commerce invalide.",
   "business-delete-failed": "Suppression du commerce impossible.",

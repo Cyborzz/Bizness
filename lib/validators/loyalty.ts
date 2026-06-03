@@ -1,14 +1,15 @@
 import { z } from "zod";
+import { postgresUuid } from "@/lib/validators/uuid";
 
 export const cardActionSchema = z.object({
-  cardId: z.string().uuid("Carte invalide"),
+  cardId: postgresUuid("Carte invalide"),
 });
 
 export const deleteCustomerSchema = z.object({
-  customerId: z.string().uuid("Client invalide"),
+  customerId: postgresUuid("Client invalide"),
 });
 
 export const updateMarketingConsentSchema = z.object({
-  customerId: z.string().uuid("Client invalide"),
+  customerId: postgresUuid("Client invalide"),
   consent_marketing: z.coerce.boolean(),
 });
