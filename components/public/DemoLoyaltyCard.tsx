@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Check, Gift, RotateCcw, ScanLine, Stamp, Trophy, UserRound } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ConfettiBurst } from "@/components/ui/confetti-burst";
 
 export function DemoLoyaltyCard() {
@@ -15,17 +15,17 @@ export function DemoLoyaltyCard() {
 
   const timeline = useMemo(
     () => [
-      { label: "Carte créée", detail: "Amine, 11:24", tone: "neutral" as const },
+      { label: "Carte créée", detail: "Amine — 11:24", tone: "neutral" as const },
       { label: "+1 tampon", detail: `${stamps}/10 actuellement`, tone: "primary" as const },
       rewards > 0
         ? {
             label: "Récompense disponible",
-            detail: `${rewards} menu offert`,
+            detail: `${rewards} menu offert(s)`,
             tone: "mint" as const,
           }
         : {
             label: "Objectif en cours",
-            detail: `${remaining} passage restant`,
+            detail: `${remaining} passage(s) restant(s)`,
             tone: "sun" as const,
           },
     ],
@@ -55,13 +55,13 @@ export function DemoLoyaltyCard() {
 
   return (
     <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-      <section className="relative rounded-lg bg-ink p-4 text-white shadow-xl">
+      <section className="relative rounded-2xl bg-ink p-4 text-white shadow-xl">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-black uppercase text-white/50">Vue client</p>
             <h2 className="mt-1 text-2xl font-black tracking-tight">Snack Démo</h2>
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white text-sm font-black text-ink">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white text-ink text-sm font-black">
             SD
           </div>
         </div>
@@ -70,6 +70,10 @@ export function DemoLoyaltyCard() {
           <ConfettiBurst trigger={celebrate} />
           <div className="overflow-hidden rounded-[22px] bg-[#f8fafc]">
             <div className="relative overflow-hidden bg-[linear-gradient(135deg,#0a0f1f,#2454ff)] p-5 text-white">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-white/10 blur-2xl"
+              />
               <div className="relative flex items-center justify-between">
                 <div>
                   <p className="text-xs font-black uppercase text-white/60">Carte fidélité</p>
@@ -83,7 +87,7 @@ export function DemoLoyaltyCard() {
                   <p className="text-5xl font-black tracking-tight tabular-nums">{stamps}/10</p>
                 </div>
                 <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-black">
-                  {remaining} restant
+                  {remaining} restant(s)
                 </span>
               </div>
               <div className="relative mt-5 h-1.5 overflow-hidden rounded-full bg-white/15">
@@ -122,7 +126,9 @@ export function DemoLoyaltyCard() {
                   </div>
                   <div>
                     <p className="font-black">1 menu offert</p>
-                    <p className="text-sm text-muted">{rewards} récompense disponible</p>
+                    <p className="text-sm text-muted">
+                      {rewards} récompense(s) disponible(s)
+                    </p>
                   </div>
                 </div>
               </div>
@@ -132,7 +138,7 @@ export function DemoLoyaltyCard() {
       </section>
 
       <section className="grid gap-5 md:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-lg border border-border bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
           <p className="text-xs font-black uppercase text-primary">Mode caisse</p>
           <h2 className="mt-2 text-2xl font-black tracking-tight text-ink">Actions staff</h2>
           <div className="mt-5 space-y-3">
@@ -148,7 +154,7 @@ export function DemoLoyaltyCard() {
               disabled={rewards === 0}
             >
               <Trophy aria-hidden className="h-5 w-5" />
-              Utiliser la récompense
+              Utiliser récompense
             </Button>
             <Button onClick={reset} className="w-full justify-start" variant="secondary" size="lg">
               <RotateCcw aria-hidden className="h-5 w-5" />
@@ -168,9 +174,9 @@ export function DemoLoyaltyCard() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-black uppercase text-primary">Suivi responsable</p>
-          <h2 className="mt-2 text-2xl font-black tracking-tight text-ink">Historique</h2>
+        <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
+          <p className="text-xs font-black uppercase text-primary">Historique live</p>
+          <h2 className="mt-2 text-2xl font-black tracking-tight text-ink">Transactions</h2>
           <div className="mt-5 space-y-3">
             {timeline.map((item) => (
               <div
@@ -181,15 +187,14 @@ export function DemoLoyaltyCard() {
                   <p className="font-black text-ink">{item.label}</p>
                   <p className="text-sm text-muted">{item.detail}</p>
                 </div>
-                <Badge tone={item.tone}>suivi</Badge>
+                <Badge tone={item.tone}>sync</Badge>
               </div>
             ))}
           </div>
           <div className="mt-5 rounded-lg bg-ink p-4 text-white">
-            <p className="text-sm font-bold text-white/60">Résumé</p>
+            <p className="text-sm font-bold text-white/60">Pitch rendez-vous</p>
             <p className="mt-2 text-lg font-black">
-              Le client voit sa progression, le staff valide le passage, le responsable garde la
-              trace.
+              « Le client voit sa progression, vous gardez les données et les récompenses. »
             </p>
           </div>
         </div>

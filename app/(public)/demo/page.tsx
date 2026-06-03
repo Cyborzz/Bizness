@@ -21,11 +21,16 @@ export default function DemoPage() {
                 Démonstration interactive
               </p>
               <h1 className="mt-3 text-5xl font-black leading-tight tracking-tight text-ink">
-                Testez le parcours client et le mode caisse.
+                Snack Démo,{" "}
+                <span className="bg-[linear-gradient(120deg,#2454ff,#7c3aed)] bg-clip-text text-transparent">
+                  prêt pour un rendez-vous terrain
+                </span>
+                .
               </h1>
               <p className="mt-4 text-muted">
-                Ajoutez des tampons comme un employé, regardez la carte client se mettre à jour et
-                déclenchez la récompense lorsque la progression arrive à 10.
+                Carte avec progression 4/10, récompense « 10 tampons = 1 menu offert », et actions
+                fictives pour montrer la mécanique. Cliquez sur <strong>Ajouter un tampon</strong>{" "}
+                jusqu&apos;à 10 pour déclencher la récompense.
               </p>
             </div>
           </Reveal>

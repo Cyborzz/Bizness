@@ -1,4 +1,4 @@
-import { CheckCircle2, HelpCircle } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { PricingCards } from "@/components/public/PricingCards";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicNav } from "@/components/public/PublicNav";
@@ -11,25 +11,10 @@ export const metadata = {
 };
 
 const includes = [
+  "Hébergement sécurisé Supabase",
   "QR code haute résolution prêt à imprimer",
-  "Configuration du commerce et de la récompense",
-  "Accès responsable et comptes staff",
   "Mises à jour produit incluses",
-];
-
-const tips = [
-  {
-    title: "Starter",
-    text: "Pour tester rapidement une carte digitale dans un petit commerce avec une règle simple.",
-  },
-  {
-    title: "Pro",
-    text: "Pour un commerce qui a une équipe, veut scanner en caisse et suivre ses clients.",
-  },
-  {
-    title: "Premium",
-    text: "Pour un commerce qui veut un accompagnement plus régulier et un kit visuel plus complet.",
-  },
+  "Sans engagement de durée",
 ];
 
 export default function PricingPage() {
@@ -42,11 +27,11 @@ export default function PricingPage() {
             <div className="max-w-3xl">
               <p className="text-sm font-black uppercase tracking-normal text-primary">Tarifs</p>
               <h1 className="mt-3 text-5xl font-black leading-tight tracking-tight text-ink">
-                Des offres simples, avec installation comprise.
+                Trois offres simples pour démarrer.
               </h1>
               <p className="mt-4 text-muted">
-                Chaque formule inclut la création du commerce, la carte digitale, le QR code et les
-                accès nécessaires pour utiliser le programme au comptoir.
+                Stripe est prévu pour une V2. Pour le MVP, chaque offre déclenche une demande de
+                démo et un suivi commercial personnalisé.
               </p>
             </div>
           </Reveal>
@@ -58,7 +43,7 @@ export default function PricingPage() {
           </Reveal>
 
           <Reveal delay={200}>
-            <div className="mt-12 rounded-lg border border-border bg-white p-6 shadow-sm">
+            <div className="mt-12 rounded-2xl border border-border bg-white p-6 shadow-sm">
               <p className="text-xs font-black uppercase tracking-normal text-primary">
                 Inclus dans chaque offre
               </p>
@@ -71,35 +56,6 @@ export default function PricingPage() {
                 ))}
               </ul>
             </div>
-          </Reveal>
-
-          <Reveal delay={260}>
-            <section className="mt-12">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-primary shadow-sm ring-1 ring-border">
-                  <HelpCircle aria-hidden className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-normal text-primary">
-                    Comment choisir
-                  </p>
-                  <h2 className="text-2xl font-black text-ink">
-                    La bonne formule dépend surtout de l&apos;équipe.
-                  </h2>
-                </div>
-              </div>
-              <div className="mt-6 grid gap-4 md:grid-cols-3">
-                {tips.map((tip) => (
-                  <div
-                    key={tip.title}
-                    className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-border"
-                  >
-                    <h3 className="font-black text-ink">{tip.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-muted">{tip.text}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
           </Reveal>
         </div>
       </main>

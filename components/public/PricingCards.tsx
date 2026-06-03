@@ -9,13 +9,13 @@ const plans = [
     monthly: "29 €/mois",
     icon: Package,
     tone: "border-border",
-    note: "Pour lancer une première carte fidélité propre dans un commerce.",
+    note: "Pour lancer une carte propre et vendre le concept rapidement.",
     items: [
       "Carte fidélité digitale",
-      "QR code prêt à afficher",
-      "Design aux couleurs du commerce",
-      "Récompense personnalisée",
-      "Support de lancement",
+      "QR code",
+      "Design personnalisé",
+      "Programme simple",
+      "Support basique",
     ],
   },
   {
@@ -25,13 +25,13 @@ const plans = [
     icon: Rocket,
     featured: true,
     tone: "border-primary",
-    note: "Pour un commerce qui veut suivre ses clients et organiser son équipe.",
+    note: "Le meilleur équilibre pour un commerce qui veut suivre ses clients.",
     items: [
       "Tout Starter",
-      "Portail responsable complet",
-      "Comptes staff pour scanner",
-      "Base clients et consentements",
       "Statistiques mensuelles",
+      "Kit affichage",
+      "Accompagnement",
+      "Gestion client",
     ],
   },
   {
@@ -40,13 +40,13 @@ const plans = [
     monthly: "99 €/mois",
     icon: Shield,
     tone: "border-ink",
-    note: "Pour les commerces qui veulent un accompagnement plus poussé.",
+    note: "Pour les commerces qui veulent préparer marketing et automatisations.",
     items: [
       "Tout Pro",
-      "Kit affichage personnalisé",
-      "Ajustements du programme",
-      "Bilan mensuel simple",
-      "Support prioritaire",
+      "Campagnes marketing futures",
+      "Automatisations futures",
+      "Suivi avancé",
+      "Prioritaire",
     ],
   },
 ];
@@ -61,15 +61,21 @@ export function PricingCards({ compact = false }: { compact?: boolean }) {
             <div
               className={
                 plan.featured
-                  ? "relative h-full overflow-hidden rounded-lg border-2 border-primary bg-white p-6 shadow-[0_30px_60px_-18px_rgba(36,84,255,0.32)]"
-                  : `relative h-full overflow-hidden rounded-lg border ${plan.tone} bg-white p-6 shadow-sm`
+                  ? "lift relative h-full overflow-hidden rounded-2xl border-2 border-primary bg-white p-6 shadow-[0_30px_60px_-15px_rgba(36,84,255,0.32)]"
+                  : `lift relative h-full overflow-hidden rounded-2xl border ${plan.tone} bg-white p-6 shadow-sm`
               }
             >
               {plan.featured ? (
-                <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-black text-white shadow-md">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-                  Le plus choisi
-                </span>
+                <>
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(36,84,255,0.35),transparent_70%)] blur-2xl"
+                  />
+                  <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-black text-white shadow-md">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+                    Le plus vendable
+                  </span>
+                </>
               ) : null}
               <div
                 className={
