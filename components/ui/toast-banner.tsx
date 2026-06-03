@@ -13,6 +13,7 @@ const successMessages: Record<string, string> = {
   "offer-sent": "Offre envoyée aux abonnés.",
   "offer-deleted": "Offre supprimée.",
   "staff-invited": "Invitation envoyée.",
+  "member-removed": "Membre retiré.",
   "password-reset-sent": "Email de réinitialisation envoyé.",
 };
 

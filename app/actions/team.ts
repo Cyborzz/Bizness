@@ -2,11 +2,14 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/queries";
 import { canAccessBusiness } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getSupabaseEnv } from "@/lib/supabase/env";
 import { postgresUuid } from "@/lib/validators/uuid";
+import type { Database } from "@/types/database";
 
 export type InviteState = {
   error?: string;
@@ -91,9 +94,46 @@ export async function inviteMemberAction(
   }
 
   if (inviteError?.message?.toLowerCase().includes("already")) {
-    return {
-      error: "Cet email existe deja dans Auth. Connectez-vous avec ce compte ou utilisez un autre email.",
-    };
+    const existingUser = await findAuthUserByEmail(supabase, parsed.data.email);
+    if (!existingUser) {
+      return { error: "Compte Auth existant introuvable. Reessayez dans quelques minutes." };
+    }
+
+    await supabase.auth.admin.updateUserById(existingUser.id, { email_confirm: true });
+
+    const profileError = await upsertMemberProfile(
+      existingUser.id,
+      parsed.data.email,
+      parsed.data.role,
+      roleBusinessId,
+    );
+
+    if (profileError) {
+      return { error: "Compte retrouve mais l'attribution du role a echoue." };
+    }
+
+    const recoveryError = await sendPasswordSetupEmail(parsed.data.email, baseUrl);
+    if (recoveryError) {
+      const temporaryPassword = generateTemporaryPassword();
+      const { error: updateError } = await supabase.auth.admin.updateUserById(existingUser.id, {
+        password: temporaryPassword,
+        email_confirm: true,
+      });
+
+      if (updateError) {
+        return { error: "Compte rattache mais impossible de renvoyer le lien." };
+      }
+
+      revalidatePath("/admin/team");
+      return {
+        success: "Email impossible a renvoyer : compte rattache avec un mot de passe temporaire.",
+        email: parsed.data.email,
+        temporaryPassword,
+      };
+    }
+
+    revalidatePath("/admin/team");
+    redirect("/admin/team?success=staff-invited");
   }
 
   const temporaryPassword = generateTemporaryPassword();
@@ -171,6 +211,36 @@ async function upsertMemberProfile(
   return error;
 }
 
+async function findAuthUserByEmail(supabase: ReturnType<typeof createAdminClient>, email: string) {
+  const normalizedEmail = email.toLowerCase();
+
+  for (let page = 1; page <= 10; page += 1) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+    if (error) return null;
+
+    const match = data.users.find((user) => user.email?.toLowerCase() === normalizedEmail);
+    if (match) return match;
+    if (data.users.length < 1000) return null;
+  }
+
+  return null;
+}
+
+async function sendPasswordSetupEmail(email: string, baseUrl: string) {
+  const { supabaseUrl, supabaseAnonKey } = getSupabaseEnv();
+  const supabase = createSupabaseClient<Database>(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${baseUrl}/admin/login/reset`,
+  });
+  return error;
+}
+
 export async function removeMemberAction(formData: FormData) {
   const userId = formData.get("userId")?.toString();
   if (!userId) redirect("/admin/team?error=access-denied");
@@ -197,5 +267,5 @@ export async function removeMemberAction(formData: FormData) {
   // The auth user remains in supabase.auth.users; deletion there is a destructive op.
   // We leave the auth account intact to avoid orphaning data unintentionally.
   revalidatePath("/admin/team");
-  redirect("/admin/team?success=staff-invited");
+  redirect("/admin/team?success=member-removed");
 }
