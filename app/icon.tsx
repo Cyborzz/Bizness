@@ -19,12 +19,21 @@ export default function Icon() {
         }}
       >
         <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
-          <circle cx="24" cy="23" r="11.5" fill="none" stroke="#ffffff" strokeWidth="2.6" />
+          <rect x="10" y="10" width="28" height="28" rx="8" fill="#ffffff" />
           <path
-            d="M18.6 23.4 L22.4 27.2 L30 18.6"
+            d="M17 18H33M17 18V33M17 25H28"
             fill="none"
-            stroke={BRAND.colors.sun}
-            strokeWidth="3.6"
+            stroke={BRAND.colors.primary}
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="32" cy="32" r="7.5" fill={BRAND.colors.sun} />
+          <path
+            d="M28.7 32.2L31.1 34.6L36.1 28.8"
+            fill="none"
+            stroke={BRAND.colors.ink}
+            strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
           />

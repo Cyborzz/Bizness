@@ -36,28 +36,28 @@ export default function OpenGraphImage() {
               width: 52,
               height: 52,
               borderRadius: 12,
-              background: "#fff",
+              background: `linear-gradient(135deg, ${BRAND.colors.ink} 0%, ${BRAND.colors.primary} 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
             <svg width="38" height="38" viewBox="0 0 48 48" fill="none">
-              <circle
-                cx="24"
-                cy="23"
-                r="11.5"
-                fill="none"
-                stroke={BRAND.colors.ink}
-                strokeWidth="2.4"
-                strokeDasharray="3.2 3.4"
-                strokeLinecap="round"
-              />
+              <rect x="10" y="10" width="28" height="28" rx="8" fill="#ffffff" />
               <path
-                d="M18.6 23.4 L22.4 27.2 L30 18.6"
+                d="M17 18H33M17 18V33M17 25H28"
                 fill="none"
                 stroke={BRAND.colors.primary}
-                strokeWidth="3.4"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="32" cy="32" r="7.5" fill={BRAND.colors.sun} />
+              <path
+                d="M28.7 32.2L31.1 34.6L36.1 28.8"
+                fill="none"
+                stroke={BRAND.colors.ink}
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
