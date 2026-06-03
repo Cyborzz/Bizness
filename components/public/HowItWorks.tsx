@@ -3,26 +3,26 @@ import { Reveal } from "@/components/ui/reveal";
 
 const steps = [
   {
-    title: "Scan en caisse",
-    text: "Le QR code reste visible au comptoir, sur chevalet ou sticker.",
+    title: "QR visible en caisse",
+    text: "Le commerce affiche son QR code au comptoir, sur un chevalet ou un sticker.",
     icon: QrCode,
     accent: "bg-primary",
   },
   {
-    title: "Carte en 20 secondes",
-    text: "Le client renseigne son prénom et un contact. Pas de téléchargement.",
+    title: "Carte créée en 20 secondes",
+    text: "Le client renseigne son prénom et un contact. Pas d'application à télécharger.",
     icon: Smartphone,
     accent: "bg-mint",
   },
   {
-    title: "Tampon immédiat",
-    text: "Le staff retrouve la carte, ajoute un tampon et l'historique se met à jour.",
+    title: "Tampon ajouté par le staff",
+    text: "L'employé scanne la carte du client et ajoute uniquement le tampon du passage.",
     icon: Stamp,
     accent: "bg-coral",
   },
   {
-    title: "Retour motivé",
-    text: "La progression est claire, la récompense devient tangible.",
+    title: "Récompense débloquée",
+    text: "La progression est claire et la récompense motive le prochain retour.",
     icon: Trophy,
     accent: "bg-sun",
   },
@@ -30,7 +30,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="section-grid bg-surface-muted py-20">
+    <section id="fonctionnement" className="section-grid bg-surface-muted py-20">
       <div className="container-page">
         <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
           <Reveal>
@@ -39,15 +39,15 @@ export function HowItWorks() {
                 Comment ça marche
               </p>
               <h2 className="mt-3 max-w-md text-4xl font-black leading-tight tracking-tight text-ink">
-                Un parcours terrain, pas un tunnel SaaS abstrait.
+                Un parcours simple au comptoir.
               </h2>
               <p className="mt-4 max-w-md text-muted">
-                Tout doit se comprendre en face d&apos;un commerçant pressé : QR, carte, tampon,
-                récompense. Pas de jargon, pas d&apos;app à installer.
+                Le commerçant affiche son QR code. Le client crée sa carte. Le staff ajoute les
+                tampons. Le responsable garde le suivi.
               </p>
               <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-black uppercase text-ink ring-1 ring-border">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-mint" />
-                Déploiement en 48h
+                Déploiement rapide
               </div>
             </div>
           </Reveal>
@@ -62,7 +62,7 @@ export function HowItWorks() {
                 const Icon = step.icon;
                 return (
                   <Reveal key={step.title} delay={index * 90}>
-                    <div className="lift relative rounded-lg border border-border bg-white p-5 shadow-sm">
+                    <div className="relative rounded-lg border border-border bg-white p-5 shadow-sm">
                       <div className="flex gap-4">
                         <div
                           className={`relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-white shadow-lg ${step.accent}`}

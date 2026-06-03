@@ -1,12 +1,9 @@
-// Identité de marque centralisée — un seul endroit à modifier pour renommer.
 export const BRAND = {
   name: "Fidélise-moi",
-  // Initiale affichée dans le logo / favicon.
   letter: "F",
-  tagline: "Loyalty OS local",
+  tagline: "Fidélité digitale locale",
   domain: "fidelise-moi.fr",
   email: "hello@fidelise-moi.fr",
-  // Couleurs du logotype (cohérentes avec le thème).
   colors: {
     ink: "#0a0f1f",
     primary: "#2454ff",

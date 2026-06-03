@@ -3,8 +3,11 @@ import {
   BadgeCheck,
   BarChart3,
   CheckCircle2,
+  ClipboardCheck,
   Coffee,
+  QrCode,
   Scissors,
+  Smartphone,
   Store,
   Wrench,
 } from "lucide-react";
@@ -18,27 +21,105 @@ import { LinkButton } from "@/components/ui/button";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { Reveal } from "@/components/ui/reveal";
 
-const reasons = [
-  "Carte impossible à perdre",
-  "Expérience plus moderne",
-  "Suivi client sans tableur",
-  "Statistiques simples",
-  "Plus de retours en commerce",
-  "Fidélisation visible au comptoir",
+const stats = [
+  { value: 20, suffix: " sec", label: "pour créer une carte client" },
+  { value: 48, suffix: " h", label: "pour lancer un commerce" },
+  { value: 0, suffix: " appli", label: "à installer côté client" },
+  { value: 3, suffix: " rôles", label: "admin, responsable, staff" },
+];
+
+const comparisons = [
+  {
+    paper: "La carte papier se perd, s'oublie et ne donne aucune donnée.",
+    digital: "La carte mobile reste accessible et garde la progression claire.",
+  },
+  {
+    paper: "Le commerçant tamponne sans savoir qui revient vraiment.",
+    digital: "Chaque passage laisse un historique lisible dans le portail.",
+  },
+  {
+    paper: "Impossible de gérer proprement les employés et les responsables.",
+    digital: "Le staff peut scanner, le responsable garde le contrôle complet.",
+  },
+  {
+    paper: "Les récompenses sont difficiles à suivre quand le commerce grandit.",
+    digital: "Les tampons, récompenses et clients sont centralisés au même endroit.",
+  },
 ];
 
 const businesses = [
-  { name: "Snacks", icon: Store, color: "bg-primary" },
-  { name: "Restaurants", icon: Coffee, color: "bg-mint" },
-  { name: "Barbiers", icon: Scissors, color: "bg-ink" },
-  { name: "Garages", icon: Wrench, color: "bg-coral" },
+  {
+    name: "Restaurants & snacks",
+    icon: Coffee,
+    color: "bg-primary",
+    text: "Un QR au comptoir, un tampon après le passage, une récompense simple à comprendre.",
+    example: "10 menus = 1 offert",
+  },
+  {
+    name: "Barbiers & coiffeurs",
+    icon: Scissors,
+    color: "bg-ink",
+    text: "Le client suit ses visites, l'équipe valide en quelques secondes après la prestation.",
+    example: "6 coupes = 1 remise",
+  },
+  {
+    name: "Instituts & beauté",
+    icon: Store,
+    color: "bg-mint",
+    text: "Un programme propre pour encourager les retours sans multiplier les cartes papier.",
+    example: "5 soins = 1 avantage",
+  },
+  {
+    name: "Garages & services",
+    icon: Wrench,
+    color: "bg-coral",
+    text: "Un suivi clair pour les clients réguliers, même quand plusieurs employés interviennent.",
+    example: "4 passages = 1 contrôle",
+  },
 ];
 
-const stats = [
-  { value: 48, suffix: "h", label: "Installation moyenne" },
-  { value: 3, suffix: "x", label: "Visite client en plus" },
-  { value: 0, suffix: " €", label: "Coût pour le client final" },
-  { value: 100, suffix: "%", label: "Mobile-first, sans app" },
+const productViews = [
+  {
+    title: "Carte client",
+    text: "Le client voit ses tampons, sa récompense et son historique depuis son téléphone.",
+    icon: Smartphone,
+    items: ["Progression claire", "Lien personnel", "Aucune application"],
+  },
+  {
+    title: "Mode staff",
+    text: "L'employé scanne le QR du client et ajoute uniquement le tampon, sans accéder au reste.",
+    icon: QrCode,
+    items: ["Scan rapide", "Action limitée", "Historique automatique"],
+  },
+  {
+    title: "Portail responsable",
+    text: "Le commerce pilote ses clients, son équipe, ses statistiques et son programme fidélité.",
+    icon: BarChart3,
+    items: ["Clients", "Statistiques", "Gestion équipe"],
+  },
+];
+
+const faqs = [
+  {
+    question: "Le client doit-il installer une application ?",
+    answer:
+      "Non. Il scanne un QR code, crée sa carte depuis son téléphone et peut revenir avec son lien personnel.",
+  },
+  {
+    question: "Un employé peut-il accéder à tout le portail ?",
+    answer:
+      "Non. Le rôle staff sert uniquement au scan et à l'ajout de tampons. Le responsable garde l'accès complet au commerce.",
+  },
+  {
+    question: "Combien de temps faut-il pour lancer un commerce ?",
+    answer:
+      "Le commerce peut être configuré rapidement avec son logo, ses couleurs, son QR code et sa règle de récompense.",
+  },
+  {
+    question: "Les données clients sont-elles protégées ?",
+    answer:
+      "Oui. Chaque commerce voit uniquement ses données, avec des accès séparés et un suivi des actions importantes.",
+  },
 ];
 
 export default function HomePage() {
@@ -48,11 +129,11 @@ export default function HomePage() {
       <main>
         <HeroSection />
 
-        <section className="bg-white py-14">
-          <div className="container-page grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="bg-white py-12">
+          <div className="container-page grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat, index) => (
-              <Reveal key={stat.label} delay={index * 90}>
-                <div className="lift rounded-2xl border border-border bg-surface-muted p-5">
+              <Reveal key={stat.label} delay={index * 80}>
+                <div className="rounded-lg border border-border bg-surface-muted p-5">
                   <p className="text-4xl font-black tracking-tight text-ink">
                     <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                   </p>
@@ -66,68 +147,82 @@ export default function HomePage() {
         <HowItWorks />
 
         <section className="bg-white py-20">
-          <div className="container-page grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+          <div className="container-page">
             <Reveal>
-              <div>
+              <div className="max-w-3xl">
                 <p className="text-sm font-black uppercase tracking-normal text-primary">
-                  Pourquoi remplacer la carte papier ?
+                  Papier ou digital
                 </p>
                 <h2 className="mt-3 text-4xl font-black leading-tight tracking-tight text-ink">
-                  La carte papier finit dans une poche. La carte digitale ramène le client.
+                  Gardez la simplicité de la carte à tampons, retirez tout ce qui ralentit.
                 </h2>
                 <p className="mt-4 text-muted">
-                  On garde la mécanique que les commerçants connaissent déjà, mais on enlève la
-                  perte, le flou et le suivi manuel. Le résultat : un outil simple à présenter et
-                  facile à adopter.
+                  Fidélise-moi parle le langage du comptoir : un QR code visible, une carte mobile,
+                  des tampons faciles à valider et un suivi clair pour le responsable.
                 </p>
               </div>
             </Reveal>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {reasons.map((reason, index) => (
-                <Reveal key={reason} delay={index * 60}>
-                  <div
-                    className={
-                      index === 0
-                        ? "lift rounded-2xl bg-ink p-5 text-white shadow-xl"
-                        : "lift rounded-2xl border border-border bg-surface-muted p-5"
-                    }
-                  >
-                    <CheckCircle2
-                      aria-hidden
-                      className={index === 0 ? "h-5 w-5 text-sun" : "h-5 w-5 text-mint"}
-                    />
-                    <p
-                      className={
-                        index === 0
-                          ? "mt-4 font-black text-white"
-                          : "mt-4 font-black text-ink"
-                      }
-                    >
-                      {reason}
-                    </p>
+            <div className="mt-10 grid gap-4 lg:grid-cols-2">
+              <Reveal>
+                <div className="rounded-lg border border-border bg-surface-muted p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-muted shadow-sm">
+                      <ClipboardCheck aria-hidden className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-xl font-black text-ink">Carte papier</h3>
                   </div>
-                </Reveal>
-              ))}
+                  <ul className="mt-5 space-y-3">
+                    {comparisons.map((item) => (
+                      <li key={item.paper} className="flex gap-3 text-sm leading-6 text-muted">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-2" />
+                        {item.paper}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+
+              <Reveal delay={120}>
+                <div className="rounded-lg border border-primary bg-white p-5 shadow-[0_24px_55px_-24px_rgba(36,84,255,0.45)]">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-white shadow-lg">
+                      <BadgeCheck aria-hidden className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-xl font-black text-ink">Fidélise-moi</h3>
+                  </div>
+                  <ul className="mt-5 space-y-3">
+                    {comparisons.map((item) => (
+                      <li key={item.digital} className="flex gap-3 text-sm leading-6 text-ink">
+                        <CheckCircle2
+                          aria-hidden
+                          className="mt-0.5 h-4 w-4 shrink-0 text-mint"
+                        />
+                        {item.digital}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
             </div>
           </div>
         </section>
 
-        <section className="section-grid py-20">
+        <section id="cas-metiers" className="section-grid py-20">
           <div className="container-page">
             <Reveal>
               <div className="mb-9 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <p className="text-sm font-black uppercase tracking-normal text-primary">
-                    Pour quels commerces ?
+                    Cas métiers
                   </p>
                   <h2 className="mt-3 max-w-2xl text-4xl font-black leading-tight tracking-tight text-ink">
-                    Une seule logique, plusieurs métiers de proximité.
+                    Un programme adapté aux commerces de proximité.
                   </h2>
                 </div>
                 <p className="max-w-md text-sm leading-6 text-muted">
-                  Snacks, cafés, instituts, lavages auto, boulangeries ou garages : le MVP reste
-                  assez souple pour adapter le discours commercial.
+                  Le même socle fonctionne pour plusieurs métiers : on personnalise le nom, les
+                  couleurs, le seuil de tampons et la récompense.
                 </p>
               </div>
             </Reveal>
@@ -137,16 +232,16 @@ export default function HomePage() {
                 const Icon = business.icon;
                 return (
                   <Reveal key={business.name} delay={index * 80}>
-                    <div className="lift rounded-2xl border border-border bg-white p-5 shadow-sm">
+                    <div className="h-full rounded-lg border border-border bg-white p-5 shadow-sm">
                       <div
                         className={`flex h-12 w-12 items-center justify-center rounded-lg text-white shadow-lg ${business.color}`}
                       >
                         <Icon aria-hidden className="h-5 w-5" />
                       </div>
                       <h3 className="mt-6 text-xl font-black text-ink">{business.name}</h3>
-                      <p className="mt-2 text-sm leading-6 text-muted">
-                        Carte personnalisée, QR code en caisse, récompense lisible, suivi dans
-                        l&apos;admin.
+                      <p className="mt-2 text-sm leading-6 text-muted">{business.text}</p>
+                      <p className="mt-5 rounded-lg bg-surface-muted px-3 py-2 text-sm font-black text-ink">
+                        {business.example}
                       </p>
                     </div>
                   </Reveal>
@@ -157,70 +252,54 @@ export default function HomePage() {
         </section>
 
         <section className="bg-white py-20">
-          <div className="container-page grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="container-page">
             <Reveal>
-              <div className="rounded-2xl border border-border bg-surface-muted p-5 shadow-sm">
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-border">
-                    <BadgeCheck aria-hidden className="h-5 w-5 text-mint" />
-                    <p className="mt-6 text-3xl font-black text-ink">+1</p>
-                    <p className="text-sm font-bold text-muted">tampon en caisse</p>
-                  </div>
-                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-border">
-                    <BarChart3 aria-hidden className="h-5 w-5 text-primary" />
-                    <p className="mt-6 text-3xl font-black text-ink">
-                      <AnimatedCounter value={126} />
-                    </p>
-                    <p className="text-sm font-bold text-muted">tampons ce mois</p>
-                  </div>
-                  <div className="rounded-2xl bg-ink p-4 text-white shadow-md">
-                    <Store aria-hidden className="h-5 w-5 text-sun" />
-                    <p className="mt-6 text-3xl font-black">
-                      <AnimatedCounter value={34} />
-                    </p>
-                    <p className="text-sm font-bold text-white/60">cartes créées</p>
-                  </div>
-                </div>
-                <div className="mt-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-border">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-black text-ink">Dernière transaction</p>
-                      <p className="mt-1 text-sm text-muted">
-                        Sarah a débloqué « 1 menu offert »
-                      </p>
-                    </div>
-                    <span className="rounded-full bg-mint-soft px-3 py-1 text-xs font-black text-mint">
-                      reward_earned
-                    </span>
-                  </div>
-                </div>
+              <div className="max-w-3xl">
+                <p className="text-sm font-black uppercase tracking-normal text-primary">
+                  Produit
+                </p>
+                <h2 className="mt-3 text-4xl font-black leading-tight tracking-tight text-ink">
+                  Trois vues, trois usages, un seul outil.
+                </h2>
+                <p className="mt-4 text-muted">
+                  Le client garde sa carte. Le staff valide les passages. Le responsable pilote le
+                  commerce sans donner trop d&apos;accès à son équipe.
+                </p>
               </div>
             </Reveal>
 
-            <Reveal delay={80}>
-              <div>
-                <p className="text-sm font-black uppercase tracking-normal text-primary">
-                  La promesse produit
-                </p>
-                <h2 className="mt-3 text-4xl font-black leading-tight tracking-tight text-ink">
-                  Un outil que ton associé peut vendre sans devoir expliquer la tech.
-                </h2>
-                <p className="mt-4 text-muted">
-                  Le design sert la vente : un commerçant voit le QR, la carte, les tampons et les
-                  stats en quelques secondes. C&apos;est volontairement direct.
-                </p>
-                <LinkButton href="/demo" className="mt-7" variant="dark">
-                  Tester la démo terrain
-                  <ArrowRight aria-hidden className="h-5 w-5" />
-                </LinkButton>
-              </div>
-            </Reveal>
+            <div className="mt-10 grid gap-4 lg:grid-cols-3">
+              {productViews.map((view, index) => {
+                const Icon = view.icon;
+                return (
+                  <Reveal key={view.title} delay={index * 90}>
+                    <div className="h-full rounded-lg border border-border bg-surface-muted p-5">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-primary shadow-sm">
+                          <Icon aria-hidden className="h-5 w-5" />
+                        </div>
+                        <h3 className="text-xl font-black text-ink">{view.title}</h3>
+                      </div>
+                      <p className="mt-4 text-sm leading-6 text-muted">{view.text}</p>
+                      <ul className="mt-5 space-y-2">
+                        {view.items.map((item) => (
+                          <li key={item} className="flex items-center gap-2 text-sm font-semibold text-ink">
+                            <CheckCircle2 aria-hidden className="h-4 w-4 text-mint" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </Reveal>
+                );
+              })}
+            </div>
           </div>
         </section>
 
         <FeatureGrid />
 
-        <section className="bg-surface-muted py-20">
+        <section id="tarifs" className="bg-surface-muted py-20">
           <div className="container-page">
             <Reveal>
               <div className="mb-9 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -229,7 +308,7 @@ export default function HomePage() {
                     Tarifs
                   </p>
                   <h2 className="mt-3 text-4xl font-black leading-tight tracking-tight text-ink">
-                    Des offres lisibles pour vendre vite.
+                    Des offres claires, installation comprise.
                   </h2>
                 </div>
                 <LinkButton href="/tarifs" variant="secondary">
@@ -241,26 +320,49 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="relative overflow-hidden bg-ink py-20 text-white">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -top-32 right-1/4 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(36,84,255,0.35),transparent_70%)] blur-3xl"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute bottom-[-160px] left-1/4 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(245,184,75,0.22),transparent_70%)] blur-3xl"
-          />
-          <div className="container-page relative flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
+        <section id="faq" className="bg-white py-20">
+          <div className="container-page grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+            <Reveal>
+              <div>
+                <p className="text-sm font-black uppercase tracking-normal text-primary">
+                  Questions fréquentes
+                </p>
+                <h2 className="mt-3 text-4xl font-black leading-tight tracking-tight text-ink">
+                  Les réponses que les commerces demandent avant de signer.
+                </h2>
+                <p className="mt-4 text-muted">
+                  Le site doit rassurer rapidement sur l&apos;installation, les rôles, la donnée client
+                  et l&apos;usage en caisse.
+                </p>
+              </div>
+            </Reveal>
+
+            <div className="grid gap-3">
+              {faqs.map((faq, index) => (
+                <Reveal key={faq.question} delay={index * 70}>
+                  <div className="rounded-lg border border-border bg-surface-muted p-5">
+                    <h3 className="font-black text-ink">{faq.question}</h3>
+                    <p className="mt-2 text-sm leading-6 text-muted">{faq.answer}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-ink py-20 text-white">
+          <div className="container-page flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
             <Reveal>
               <div className="max-w-2xl">
                 <p className="text-sm font-black uppercase tracking-normal text-sun">
-                  Prêt pour le terrain
+                  Lancement commerce
                 </p>
                 <h2 className="mt-3 text-4xl font-black leading-tight tracking-tight">
-                  Lancer ma carte fidélité digitale
+                  Transformez une carte papier en expérience mobile.
                 </h2>
                 <p className="mt-4 text-white/70">
-                  Un MVP clair, démontrable et assez propre pour signer les premiers commerces.
+                  On configure le commerce, le QR code, les rôles équipe et la récompense. Le
+                  responsable peut ensuite suivre l&apos;activité depuis son portail.
                 </p>
               </div>
             </Reveal>

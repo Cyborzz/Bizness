@@ -10,9 +10,10 @@ import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils/cn";
 
 const nav = [
-  { href: "/demo", label: "Démo" },
+  { href: "/#fonctionnement", label: "Fonctionnement" },
+  { href: "/#cas-metiers", label: "Métiers" },
   { href: "/tarifs", label: "Tarifs" },
-  { href: "/contact", label: "Contact" },
+  { href: "/demo", label: "Démo" },
 ];
 
 export function PublicNav() {
@@ -66,7 +67,7 @@ export function PublicNav() {
           </span>
         </Link>
 
-        <nav className="hidden items-center rounded-full border border-border bg-white px-1.5 py-1 text-sm font-semibold text-muted shadow-sm sm:flex">
+        <nav className="hidden items-center rounded-full border border-border bg-white px-1.5 py-1 text-sm font-semibold text-muted shadow-sm lg:flex">
           {nav.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -112,10 +113,12 @@ export function PublicNav() {
         className={cn(
           "sm:hidden",
           "fixed inset-x-0 top-[72px] z-30 origin-top transition",
-          open ? "pointer-events-auto scale-y-100 opacity-100" : "pointer-events-none scale-y-95 opacity-0",
+          open
+            ? "pointer-events-auto scale-y-100 opacity-100"
+            : "pointer-events-none scale-y-95 opacity-0",
         )}
       >
-        <div className="mx-3 mt-2 rounded-2xl border border-border bg-white p-3 shadow-xl">
+        <div className="mx-3 mt-2 rounded-lg border border-border bg-white p-3 shadow-xl">
           <nav className="flex flex-col">
             {nav.map((item) => {
               const isActive = pathname === item.href;
