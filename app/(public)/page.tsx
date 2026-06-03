@@ -8,6 +8,7 @@ import {
   Store,
   Wrench,
 } from "lucide-react";
+import { FaqSection } from "@/components/public/FaqSection";
 import { FeatureGrid } from "@/components/public/FeatureGrid";
 import { HeroSection } from "@/components/public/HeroSection";
 import { HowItWorks } from "@/components/public/HowItWorks";
@@ -15,6 +16,8 @@ import { MarketProofSection } from "@/components/public/MarketProofSection";
 import { PricingCards } from "@/components/public/PricingCards";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicNav } from "@/components/public/PublicNav";
+import { Testimonials } from "@/components/public/Testimonials";
+import { TrustStrip } from "@/components/public/TrustStrip";
 import { LinkButton } from "@/components/ui/button";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { Reveal } from "@/components/ui/reveal";
@@ -48,6 +51,8 @@ export default function HomePage() {
       <PublicNav />
       <main>
         <HeroSection />
+
+        <TrustStrip />
 
         <section className="bg-white py-14">
           <div className="container-page grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -223,6 +228,8 @@ export default function HomePage() {
 
         <FeatureGrid />
 
+        <Testimonials />
+
         <section className="bg-surface-muted py-20">
           <div className="container-page">
             <Reveal>
@@ -243,6 +250,8 @@ export default function HomePage() {
             <PricingCards compact />
           </div>
         </section>
+
+        <FaqSection />
 
         <section className="relative overflow-hidden bg-ink py-20 text-white">
           <div

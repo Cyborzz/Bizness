@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { BRAND } from "@/lib/brand";
+import { GLYPH } from "@/lib/brand-glyph";
 
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
@@ -18,22 +19,29 @@ export default function Icon() {
           borderRadius: 7,
         }}
       >
-        <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
-          <rect x="10" y="10" width="28" height="28" rx="8" fill="#ffffff" />
+        <svg width="24" height="24" viewBox={GLYPH.viewBox} fill="none">
+          <rect
+            x={GLYPH.card.x}
+            y={GLYPH.card.y}
+            width={GLYPH.card.w}
+            height={GLYPH.card.h}
+            rx={GLYPH.card.rx}
+            fill="#ffffff"
+          />
           <path
-            d="M17 18H33M17 18V33M17 25H28"
+            d={GLYPH.fPath}
             fill="none"
             stroke={BRAND.colors.primary}
-            strokeWidth="4"
+            strokeWidth={GLYPH.fStroke}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <circle cx="32" cy="32" r="7.5" fill={BRAND.colors.sun} />
+          <circle cx={GLYPH.stamp.cx} cy={GLYPH.stamp.cy} r={GLYPH.stamp.r} fill={BRAND.colors.sun} />
           <path
-            d="M28.7 32.2L31.1 34.6L36.1 28.8"
+            d={GLYPH.checkPath}
             fill="none"
             stroke={BRAND.colors.ink}
-            strokeWidth="2.5"
+            strokeWidth={GLYPH.checkStroke}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
