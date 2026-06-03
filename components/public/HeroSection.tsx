@@ -95,7 +95,11 @@ function CounterMockup() {
           <p className="text-xs text-white/60">/c/snack-demo</p>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-4 gap-1">
+      <div className="relative mt-4 grid grid-cols-4 gap-1 overflow-hidden rounded-sm">
+        <span
+          aria-hidden
+          className="animate-scan-line absolute inset-x-0 top-0 z-10 h-0.5 rounded-full bg-sun"
+        />
         {Array.from({ length: 16 }).map((_, index) => (
           <span
             key={index}
@@ -134,7 +138,7 @@ export function HeroSection() {
           <Reveal>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-sm font-bold text-white backdrop-blur">
               <Sparkles aria-hidden className="h-4 w-4 text-sun" />
-              Fidélisation locale, vendable en rendez-vous dès maintenant
+              Fidélisation locale, prête à lancer en 48h
             </div>
           </Reveal>
           <Reveal delay={80}>
@@ -150,7 +154,7 @@ export function HeroSection() {
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">
               Vos clients scannent un QR code, créent leur carte sur téléphone et cumulent des
               tampons à chaque passage. Le commerçant garde un dashboard clair, sans application
-              native ni usine à gaz.
+              native ni carte papier à gérer.
             </p>
           </Reveal>
           <Reveal delay={220}>
@@ -161,7 +165,7 @@ export function HeroSection() {
               </LinkButton>
               <LinkButton href="/demo" variant="outline" size="lg">
                 <PlayCircle aria-hidden className="h-5 w-5" />
-                Voir la démonstration
+                Voir le parcours
               </LinkButton>
             </div>
           </Reveal>
@@ -229,7 +233,7 @@ export function HeroSection() {
 
       <div className="border-t border-white/10 bg-ink/60">
         <div className="container-page flex flex-wrap items-center gap-x-8 gap-y-3 py-6 text-xs font-bold uppercase tracking-normal text-white/40">
-          <span>Approuvé par les commerçants ·</span>
+          <span>Pensé pour les commerces locaux ·</span>
           <span>Snacks</span>
           <span>Cafés &amp; restaurants</span>
           <span>Barbiers</span>

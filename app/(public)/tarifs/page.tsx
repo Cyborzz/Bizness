@@ -11,10 +11,10 @@ export const metadata = {
 };
 
 const includes = [
-  "Hébergement sécurisé Supabase",
   "QR code haute résolution prêt à imprimer",
+  "Configuration du commerce et de la récompense",
+  "Accès responsable et comptes staff",
   "Mises à jour produit incluses",
-  "Sans engagement de durée",
 ];
 
 export default function PricingPage() {
@@ -30,8 +30,8 @@ export default function PricingPage() {
                 Trois offres simples pour démarrer.
               </h1>
               <p className="mt-4 text-muted">
-                Stripe est prévu pour une V2. Pour le MVP, chaque offre déclenche une demande de
-                démo et un suivi commercial personnalisé.
+                Chaque formule inclut la création du commerce, la carte digitale, le QR code et les
+                accès nécessaires pour utiliser le programme au comptoir.
               </p>
             </div>
           </Reveal>

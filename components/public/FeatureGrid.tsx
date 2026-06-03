@@ -48,14 +48,14 @@ const features = [
     accent: "from-sun to-primary",
   },
   {
-    title: "RLS Supabase",
-    text: "Données isolées par commerce, rôle super admin, owner et staff.",
+    title: "Accès sécurisés",
+    text: "Données séparées par commerce, avec accès responsable et staff.",
     icon: ShieldCheck,
     accent: "from-mint to-violet",
   },
   {
-    title: "Stats MVP",
-    text: "Cartes créées, tampons distribués, récompenses disponibles.",
+    title: "Stats utiles",
+    text: "Cartes créées, tampons distribués et récompenses disponibles.",
     icon: BarChart3,
     accent: "from-coral to-primary",
   },
@@ -82,8 +82,8 @@ export function FeatureGrid() {
           </Reveal>
           <Reveal delay={80}>
             <p className="max-w-sm text-sm leading-6 text-white/60">
-              La V1 reste volontairement serrée : tout ce qui aide à vendre et démontrer, rien qui
-              ralentit la sortie.
+              Le commerce voit l&apos;essentiel : QR, cartes, tampons, clients, équipe et chiffres
+              simples à suivre.
             </p>
           </Reveal>
         </div>

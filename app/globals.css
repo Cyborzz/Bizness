@@ -256,6 +256,23 @@ select {
   }
 }
 
+@keyframes fl-scan-line {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  18% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(88px);
+  }
+}
+
 @keyframes fl-spin-slow {
   to {
     transform: rotate(360deg);
@@ -324,6 +341,10 @@ select {
 .animate-gradient {
   background-size: 200% 200%;
   animation: fl-gradient-shift 8s ease-in-out infinite;
+}
+
+.animate-scan-line {
+  animation: fl-scan-line 2.8s var(--ease-out) infinite;
 }
 
 .shimmer {

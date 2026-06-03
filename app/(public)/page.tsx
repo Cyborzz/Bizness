@@ -11,6 +11,7 @@ import {
 import { FeatureGrid } from "@/components/public/FeatureGrid";
 import { HeroSection } from "@/components/public/HeroSection";
 import { HowItWorks } from "@/components/public/HowItWorks";
+import { MarketProofSection } from "@/components/public/MarketProofSection";
 import { PricingCards } from "@/components/public/PricingCards";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicNav } from "@/components/public/PublicNav";
@@ -35,8 +36,8 @@ const businesses = [
 ];
 
 const stats = [
-  { value: 48, suffix: "h", label: "Installation moyenne" },
-  { value: 3, suffix: "x", label: "Visite client en plus" },
+  { value: 48, suffix: "h", label: "Lancement moyen" },
+  { value: 3, suffix: "x", label: "Parcours plus mémorable" },
   { value: 0, suffix: " €", label: "Coût pour le client final" },
   { value: 100, suffix: "%", label: "Mobile-first, sans app" },
 ];
@@ -64,6 +65,8 @@ export default function HomePage() {
         </section>
 
         <HowItWorks />
+
+        <MarketProofSection />
 
         <section className="bg-white py-20">
           <div className="container-page grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
@@ -126,8 +129,8 @@ export default function HomePage() {
                   </h2>
                 </div>
                 <p className="max-w-md text-sm leading-6 text-muted">
-                  Snacks, cafés, instituts, lavages auto, boulangeries ou garages : le MVP reste
-                  assez souple pour adapter le discours commercial.
+                  Snacks, cafés, instituts, lavages auto, boulangeries ou garages : la logique reste
+                  simple à expliquer, puis se personnalise selon la récompense du commerce.
                 </p>
               </div>
             </Reveal>
@@ -190,7 +193,7 @@ export default function HomePage() {
                       </p>
                     </div>
                     <span className="rounded-full bg-mint-soft px-3 py-1 text-xs font-black text-mint">
-                      reward_earned
+                      récompense prête
                     </span>
                   </div>
                 </div>
@@ -203,14 +206,14 @@ export default function HomePage() {
                   La promesse produit
                 </p>
                 <h2 className="mt-3 text-4xl font-black leading-tight tracking-tight text-ink">
-                  Un outil que ton associé peut vendre sans devoir expliquer la tech.
+                  Un outil que le commerçant comprend sans devoir expliquer la tech.
                 </h2>
                 <p className="mt-4 text-muted">
                   Le design sert la vente : un commerçant voit le QR, la carte, les tampons et les
                   stats en quelques secondes. C&apos;est volontairement direct.
                 </p>
                 <LinkButton href="/demo" className="mt-7" variant="dark">
-                  Tester la démo terrain
+                  Tester la démo
                   <ArrowRight aria-hidden className="h-5 w-5" />
                 </LinkButton>
               </div>
@@ -254,13 +257,13 @@ export default function HomePage() {
             <Reveal>
               <div className="max-w-2xl">
                 <p className="text-sm font-black uppercase tracking-normal text-sun">
-                  Prêt pour le terrain
+                  Prêt pour le commerce
                 </p>
                 <h2 className="mt-3 text-4xl font-black leading-tight tracking-tight">
                   Lancer ma carte fidélité digitale
                 </h2>
                 <p className="mt-4 text-white/70">
-                  Un MVP clair, démontrable et assez propre pour signer les premiers commerces.
+                  Un parcours clair, démontrable et prêt pour les commerces de proximité.
                 </p>
               </div>
             </Reveal>

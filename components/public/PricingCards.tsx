@@ -9,7 +9,7 @@ const plans = [
     monthly: "29 €/mois",
     icon: Package,
     tone: "border-border",
-    note: "Pour lancer une carte propre et vendre le concept rapidement.",
+    note: "Pour lancer une première carte digitale propre dans un commerce.",
     items: [
       "Carte fidélité digitale",
       "QR code",
@@ -25,12 +25,12 @@ const plans = [
     icon: Rocket,
     featured: true,
     tone: "border-primary",
-    note: "Le meilleur équilibre pour un commerce qui veut suivre ses clients.",
+    note: "Pour un commerce qui veut suivre ses clients et organiser son équipe.",
     items: [
       "Tout Starter",
       "Statistiques mensuelles",
       "Kit affichage",
-      "Accompagnement",
+      "Comptes staff",
       "Gestion client",
     ],
   },
@@ -40,13 +40,13 @@ const plans = [
     monthly: "99 €/mois",
     icon: Shield,
     tone: "border-ink",
-    note: "Pour les commerces qui veulent préparer marketing et automatisations.",
+    note: "Pour les commerces qui veulent un accompagnement plus poussé.",
     items: [
       "Tout Pro",
-      "Campagnes marketing futures",
-      "Automatisations futures",
+      "Kit affichage personnalisé",
+      "Ajustements du programme",
       "Suivi avancé",
-      "Prioritaire",
+      "Support prioritaire",
     ],
   },
 ];
@@ -73,7 +73,7 @@ export function PricingCards({ compact = false }: { compact?: boolean }) {
                   />
                   <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-black text-white shadow-md">
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-                    Le plus vendable
+                    Le plus choisi
                   </span>
                 </>
               ) : null}

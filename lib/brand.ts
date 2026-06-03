@@ -3,7 +3,7 @@ export const BRAND = {
   name: "Fidélise-moi",
   // Initiale affichée dans le logo / favicon.
   letter: "F",
-  tagline: "Loyalty OS local",
+  tagline: "Fidélité digitale locale",
   domain: "fidelise-moi.fr",
   email: "hello@fidelise-moi.fr",
   // Couleurs du logotype (cohérentes avec le thème).

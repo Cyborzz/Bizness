@@ -29,8 +29,8 @@ export function PublicFooter() {
             </div>
           </div>
           <p className="mt-4 text-sm leading-6 text-muted">
-            Carte fidélité digitale mobile-first pour commerces locaux. Pensé pour vendre vite,
-            tester vite et apprendre avec les premiers clients.
+            Carte fidélité digitale mobile-first pour commerces locaux : QR code, carte mobile,
+            tampons, rôles équipe et suivi responsable.
           </p>
           <a
             href={`mailto:${BRAND.email}`}
@@ -68,18 +68,18 @@ export function PublicFooter() {
         </div>
 
         <div>
-          <p className="text-xs font-black uppercase tracking-normal text-muted-2">Légal</p>
+          <p className="text-xs font-black uppercase tracking-normal text-muted-2">Confiance</p>
           <ul className="mt-4 space-y-2 text-sm font-semibold text-ink">
-            <li>RGPD ready</li>
-            <li>RLS Supabase</li>
-            <li>Hébergement Vercel</li>
+            <li>Données clients séparées</li>
+            <li>Accès par rôle</li>
+            <li>Hébergement VPS sécurisé</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border">
         <div className="container-page flex flex-col items-center justify-between gap-3 py-5 text-xs text-muted sm:flex-row">
           <p>© {new Date().getFullYear()} {BRAND.name}. Tous droits réservés.</p>
-          <p>Construit avec Next.js, Supabase et beaucoup de café ☕</p>
+          <p>Construit avec Next.js et Supabase.</p>
         </div>
       </div>
     </footer>
