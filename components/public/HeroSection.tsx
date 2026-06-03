@@ -1,135 +1,62 @@
 import Image from "next/image";
-import { ArrowRight, Check, PlayCircle, QrCode, ShieldCheck, Stamp, Users } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  CheckCircle2,
+  PlayCircle,
+  QrCode,
+  ScanLine,
+  ShieldCheck,
+  Stamp,
+} from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 
 const proof = [
-  { label: "Création client", value: "20 sec" },
-  { label: "Lancement commerce", value: "48 h" },
-  { label: "Application client", value: "0" },
+  "Sans application client",
+  "QR prêt pour le comptoir",
+  "Accès staff limité au scan",
 ];
 
-function PhoneMockup() {
-  return (
-    <div className="relative mx-auto w-full max-w-[322px]">
-      <div className="rounded-[34px] border border-white/15 bg-gray-950 p-2 shadow-[0_34px_90px_rgba(0,0,0,0.45)]">
-        <div className="overflow-hidden rounded-[28px] bg-[#f8fafc]">
-          <div className="flex items-center justify-between bg-ink px-5 py-4 text-white">
-            <div>
-              <p className="text-xs font-bold uppercase text-white/55">Snack Démo</p>
-              <p className="text-lg font-black">Carte fidélité</p>
-            </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-sm font-black text-ink">
-              SD
-            </div>
-          </div>
-          <div className="p-4">
-            <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-border">
-              <div className="flex items-end justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase text-muted-2">Progression</p>
-                  <p className="text-4xl font-black tracking-normal text-ink">7/10</p>
-                </div>
-                <span className="rounded-full bg-sun-soft px-3 py-1 text-xs font-black text-[#9a5b00]">
-                  3 passages
-                </span>
-              </div>
-              <div className="mt-5 grid grid-cols-5 gap-2">
-                {Array.from({ length: 10 }).map((_, index) => (
-                  <div
-                    key={index}
-                    style={{ animationDelay: `${index * 60}ms` }}
-                    className={
-                      index < 7
-                        ? "animate-stamp-pop flex aspect-square items-center justify-center rounded-full bg-ink text-white"
-                        : "flex aspect-square items-center justify-center rounded-full border border-border bg-surface-muted text-xs font-bold text-muted-2"
-                    }
-                  >
-                    {index < 7 ? <Check aria-hidden className="h-3.5 w-3.5" /> : index + 1}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <div className="rounded-lg bg-mint-soft p-3">
-                <p className="text-[11px] font-bold uppercase text-mint">Récompense</p>
-                <p className="mt-1 text-sm font-black text-ink">1 menu offert</p>
-              </div>
-              <div className="rounded-lg bg-primary-soft p-3">
-                <p className="text-[11px] font-bold uppercase text-primary-dark">Historique</p>
-                <p className="mt-1 text-sm font-black text-ink">+1 ce matin</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DeskMockup() {
-  return (
-    <div className="absolute bottom-0 right-0 w-full max-w-md rounded-lg border border-white/10 bg-white p-4 text-ink shadow-[0_30px_90px_rgba(0,0,0,0.30)]">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-bold uppercase text-muted-2">Mode staff</p>
-          <p className="mt-1 text-lg font-black">Scanner et ajouter +1 tampon</p>
-        </div>
-        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-white animate-pulse-ring">
-          <Stamp aria-hidden className="h-5 w-5" />
-        </div>
-      </div>
-      <div className="mt-4 grid gap-2 sm:grid-cols-3">
-        <div className="rounded-lg bg-surface-muted p-3">
-          <Users aria-hidden className="h-4 w-4 text-primary" />
-          <p className="mt-2 text-xs font-black text-ink">Client retrouvé</p>
-        </div>
-        <div className="rounded-lg bg-surface-muted p-3">
-          <QrCode aria-hidden className="h-4 w-4 text-ink" />
-          <p className="mt-2 text-xs font-black text-ink">QR validé</p>
-        </div>
-        <div className="rounded-lg bg-surface-muted p-3">
-          <ShieldCheck aria-hidden className="h-4 w-4 text-mint" />
-          <p className="mt-2 text-xs font-black text-ink">Accès limité</p>
-        </div>
-      </div>
-    </div>
-  );
-}
+const flow = [
+  { label: "QR caisse", icon: QrCode },
+  { label: "Carte mobile", icon: BadgeCheck },
+  { label: "Scan staff", icon: ScanLine },
+  { label: "Tampon ajouté", icon: Stamp },
+];
 
 export function HeroSection() {
   return (
-    <section className="fine-noise relative overflow-hidden bg-ink text-white">
+    <section className="relative overflow-hidden bg-white text-ink">
       <Image
         src="/hero-loyalty-saas.png"
         alt=""
         aria-hidden
         fill
         priority
-        className="object-cover opacity-[0.24]"
+        className="object-cover object-center"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-[linear-gradient(110deg,#0a0f1f_0%,rgba(10,15,31,0.98)_42%,rgba(10,15,31,0.70)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.96)_42%,rgba(255,255,255,0.72)_64%,rgba(255,255,255,0.12)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(180deg,transparent,#ffffff)]" />
 
-      <div className="container-page relative grid min-h-[86svh] gap-10 py-16 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:py-20">
+      <div className="container-page relative grid min-h-[82svh] items-center py-16 lg:py-20">
         <div className="max-w-3xl">
           <Reveal>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-sm font-bold text-white backdrop-blur">
-              <QrCode aria-hidden className="h-4 w-4 text-sun" />
-              QR en caisse, carte mobile, tampons en un scan
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 text-sm font-bold text-ink shadow-sm">
+              <QrCode aria-hidden className="h-4 w-4 text-primary" />
+              Une carte fidélité digitale prête pour le comptoir
             </div>
           </Reveal>
           <Reveal delay={80}>
-            <h1 className="text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
-              La carte fidélité digitale que vos clients ajoutent en 20 secondes.
+            <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+              Faites revenir vos clients sans carte papier ni application.
             </h1>
           </Reveal>
           <Reveal delay={160}>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">
-              Fidélise-moi remplace la carte papier par un parcours simple : le client scanne,
-              garde sa carte sur téléphone, et votre équipe ajoute les tampons depuis un accès
-              sécurisé.
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted">
+              Fidélise-moi transforme un simple QR code en carte mobile : le client scanne,
+              l&apos;employé ajoute les tampons, le responsable suit tout depuis son portail.
             </p>
           </Reveal>
           <Reveal delay={220}>
@@ -138,59 +65,66 @@ export function HeroSection() {
                 Demander une démo
                 <ArrowRight aria-hidden className="h-5 w-5" />
               </LinkButton>
-              <LinkButton href="/demo" variant="outline" size="lg">
+              <LinkButton href="/demo" variant="secondary" size="lg">
                 <PlayCircle aria-hidden className="h-5 w-5" />
                 Tester le parcours
               </LinkButton>
             </div>
           </Reveal>
-          <Reveal delay={300}>
-            <div className="mt-10 grid max-w-2xl grid-cols-3 overflow-hidden rounded-lg border border-white/10 bg-white/10 backdrop-blur">
+          <Reveal delay={280}>
+            <ul className="mt-8 grid max-w-2xl gap-2 sm:grid-cols-3">
               {proof.map((item) => (
-                <div key={item.label} className="border-r border-white/10 p-4 last:border-r-0">
-                  <p className="text-2xl font-black tracking-tight">{item.value}</p>
-                  <p className="mt-1 text-xs font-bold uppercase text-white/55">{item.label}</p>
-                </div>
+                <li
+                  key={item}
+                  className="flex items-center gap-2 rounded-lg border border-border bg-white/88 px-3 py-2 text-sm font-bold text-ink shadow-sm backdrop-blur"
+                >
+                  <CheckCircle2 aria-hidden className="h-4 w-4 shrink-0 text-mint" />
+                  {item}
+                </li>
               ))}
-            </div>
+            </ul>
           </Reveal>
         </div>
 
-        <div className="relative min-h-[540px]">
-          <div className="absolute left-1/2 top-6 w-full -translate-x-1/2 lg:top-16">
-            <Reveal delay={120}>
-              <PhoneMockup />
-            </Reveal>
+        <Reveal delay={340}>
+          <div className="mt-12 max-w-5xl rounded-lg border border-border bg-white/92 p-3 shadow-[0_28px_70px_-34px_rgba(10,15,31,0.45)] backdrop-blur md:p-4">
+            <div className="grid gap-3 md:grid-cols-4">
+              {flow.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.label} className="rounded-lg bg-surface-muted p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-primary shadow-sm">
+                        <Icon aria-hidden className="h-5 w-5" />
+                      </div>
+                      <span className="text-xs font-black text-muted-2">0{index + 1}</span>
+                    </div>
+                    <p className="mt-5 text-sm font-black text-ink">{item.label}</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <Reveal delay={200}>
-            <div className="glass-panel absolute -left-3 bottom-24 hidden w-56 rounded-lg p-4 text-white sm:block lg:-left-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white text-ink">
-                  <QrCode aria-hidden className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-sm font-black">Affiche QR</p>
-                  <p className="text-xs text-white/60">Prête pour le comptoir</p>
-                </div>
+        </Reveal>
+
+        <Reveal delay={420}>
+          <div className="mt-4 flex max-w-5xl flex-col gap-3 rounded-lg bg-ink p-4 text-white shadow-xl sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-ink">
+                <ShieldCheck aria-hidden className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-black">Pensé pour une vraie équipe</p>
+                <p className="text-sm text-white/60">
+                  Le staff scanne, le responsable pilote, le super admin garde la vision globale.
+                </p>
               </div>
             </div>
-          </Reveal>
-          <Reveal delay={260}>
-            <DeskMockup />
-          </Reveal>
-        </div>
-      </div>
-
-      <div className="border-t border-white/10 bg-ink/70">
-        <div className="container-page flex flex-wrap items-center gap-x-8 gap-y-3 py-6 text-xs font-bold uppercase tracking-normal text-white/45">
-          <span>Pensé pour</span>
-          <span>Restaurants</span>
-          <span>Snacks</span>
-          <span>Barbiers</span>
-          <span>Instituts</span>
-          <span>Boulangeries</span>
-          <span>Services locaux</span>
-        </div>
+            <span className="rounded-full bg-mint px-3 py-1 text-xs font-black text-white">
+              rôles séparés
+            </span>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
