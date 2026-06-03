@@ -4,6 +4,7 @@ import { createServerClient } from "@supabase/ssr";
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isLogin = pathname === "/admin/login";
+  const isAuthPage = isLogin || pathname.startsWith("/admin/login/");
 
   const response = NextResponse.next({ request });
 
@@ -28,7 +29,7 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && !isLogin) {
+  if (!user && !isAuthPage) {
     const redirectUrl = new URL("/admin/login", request.url);
     redirectUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(redirectUrl);
