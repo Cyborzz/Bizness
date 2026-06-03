@@ -31,14 +31,21 @@ export default async function ScanPage() {
           Le client présente son QR (depuis sa carte sauvegardée). Pointez la caméra vers le code,
           la page s&apos;ouvre automatiquement et vous pouvez ajouter un tampon.
         </p>
-        <CardScanner />
+        <CardScanner allowManualSearch={profile.role !== "staff"} />
         <div className="rounded-lg border border-border bg-surface-muted p-4 text-sm text-muted">
           <p className="font-black text-ink">Astuce</p>
-          <p className="mt-1">
-            Compatible Chrome / Edge / Samsung Internet sur Android. Sur iPhone, le scanner natif
-            est limité : utilisez plutôt la recherche par téléphone ou nom dans{" "}
-            <strong>Cartes</strong>.
-          </p>
+          {profile.role === "staff" ? (
+            <p className="mt-1">
+              Compatible Chrome / Edge / Samsung Internet sur Android. Si la caméra ne démarre pas,
+              demandez au responsable d&apos;ouvrir la carte depuis la recherche.
+            </p>
+          ) : (
+            <p className="mt-1">
+              Compatible Chrome / Edge / Samsung Internet sur Android. Sur iPhone, le scanner natif
+              est limité : utilisez plutôt la recherche par téléphone ou nom dans{" "}
+              <strong>Cartes</strong>.
+            </p>
+          )}
         </div>
       </div>
     </AdminShell>

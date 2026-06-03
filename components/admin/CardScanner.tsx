@@ -20,7 +20,7 @@ declare global {
   }
 }
 
-export function CardScanner() {
+export function CardScanner({ allowManualSearch = true }: { allowManualSearch?: boolean }) {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -87,7 +87,11 @@ export function CardScanner() {
     setLastValue(null);
     if (typeof window === "undefined" || !navigator.mediaDevices?.getUserMedia) {
       setState("unsupported");
-      setError("Camera indisponible sur ce navigateur. Utilisez la recherche dans Cartes.");
+      setError(
+        allowManualSearch
+          ? "Camera indisponible sur ce navigateur. Utilisez la recherche dans Cartes."
+          : "Camera indisponible sur ce navigateur. Demandez au responsable d'ouvrir la carte.",
+      );
       return;
     }
 
@@ -181,8 +185,14 @@ export function CardScanner() {
                 <>
                   <ZapOff aria-hidden className="h-8 w-8 text-sun" />
                   <p className="max-w-xs text-center text-sm font-semibold">
-                    Camera indisponible ici. Utilisez la recherche manuelle dans{" "}
-                    <strong>Cartes</strong>.
+                    {allowManualSearch ? (
+                      <>
+                        Camera indisponible ici. Utilisez la recherche manuelle dans{" "}
+                        <strong>Cartes</strong>.
+                      </>
+                    ) : (
+                      "Camera indisponible ici. Demandez au responsable d'ouvrir la carte."
+                    )}
                   </p>
                 </>
               ) : (
@@ -235,9 +245,11 @@ export function CardScanner() {
             Demarrer la camera
           </Button>
         )}
-        <LinkButton href="/admin/cards" variant="secondary">
-          Recherche client
-        </LinkButton>
+        {allowManualSearch ? (
+          <LinkButton href="/admin/cards" variant="secondary">
+            Recherche client
+          </LinkButton>
+        ) : null}
       </div>
     </div>
   );

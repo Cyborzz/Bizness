@@ -108,11 +108,11 @@ URLs :
 
 ## Rôles & permissions
 
-| Rôle | Création commerce | Modif design | Tampons | Suppression client | Envoi offre | Invitation |
-| ---- | :-: | :-: | :-: | :-: | :-: | :-: |
-| `super_admin` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (tous rôles) |
-| `business_owner` | ❌ | ✅ (sien) | ✅ | ✅ (sien) | ✅ | ✅ (staff seul) |
-| `staff` | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Rôle | Portail complet | Création commerce | Modif design | Tampons | Suppression client | Envoi offre | Invitation |
+| ---- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| `super_admin` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (tous rôles) |
+| `business_owner` | ✅ (son commerce) | ❌ | ✅ (sien) | ✅ | ✅ (sien) | ✅ | ✅ (staff seul) |
+| `staff` | ❌ | ❌ | ❌ | ✅ (scan uniquement) | ❌ | ❌ | ❌ |
 
 Toutes les destructive actions appliquent la vérification de rôle **après** RLS Supabase.
 

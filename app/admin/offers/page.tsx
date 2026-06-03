@@ -5,7 +5,7 @@ import { OffersList } from "@/components/admin/OffersList";
 import { Badge } from "@/components/ui/badge";
 import { ToastBanner } from "@/components/ui/toast-banner";
 import { requireAdmin } from "@/lib/auth/queries";
-import { getBusinessFilter } from "@/lib/permissions";
+import { getBusinessFilter, requireFullPortalAccess } from "@/lib/permissions";
 import { getServerVapid } from "@/lib/push/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -24,6 +24,7 @@ export default async function OffersPage({
   const error = typeof params.error === "string" ? params.error : undefined;
 
   const { profile } = await requireAdmin();
+  requireFullPortalAccess(profile);
   const businessFilter = getBusinessFilter(profile);
   const supabase = createAdminClient();
   const vapidConfigured = Boolean(getServerVapid());

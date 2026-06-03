@@ -9,7 +9,7 @@ import { TransactionTable } from "@/components/admin/TransactionTable";
 import { Badge } from "@/components/ui/badge";
 import { ToastBanner } from "@/components/ui/toast-banner";
 import { requireAdmin } from "@/lib/auth/queries";
-import { requireBusinessAccess } from "@/lib/permissions";
+import { requireBusinessAccess, requireFullPortalAccess } from "@/lib/permissions";
 import { generateBusinessQrUrl } from "@/lib/qr";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -30,6 +30,7 @@ export default async function BusinessDetailPage({
   const success = typeof sp.success === "string" ? sp.success : undefined;
   const error = typeof sp.error === "string" ? sp.error : undefined;
   const { profile } = await requireAdmin();
+  requireFullPortalAccess(profile);
   requireBusinessAccess(profile, id);
 
   const supabase = createAdminClient();

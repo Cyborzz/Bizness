@@ -2,10 +2,9 @@ import { Users } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { InviteMemberForm } from "@/components/admin/InviteMemberForm";
 import { TeamMemberList } from "@/components/admin/TeamMemberList";
-import { EmptyState } from "@/components/ui/empty-state";
 import { ToastBanner } from "@/components/ui/toast-banner";
 import { requireAdmin, type AdminProfile } from "@/lib/auth/queries";
-import { getBusinessFilter } from "@/lib/permissions";
+import { getBusinessFilter, requireFullPortalAccess } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -23,16 +22,7 @@ export default async function TeamPage({
   const error = typeof params.error === "string" ? params.error : undefined;
 
   const { user, profile } = await requireAdmin();
-
-  if (profile.role === "staff") {
-    return (
-      <AdminShell profile={profile}>
-        <EmptyState title="Accès réservé">
-          La gestion d&apos;équipe est réservée à l&apos;owner ou au super admin.
-        </EmptyState>
-      </AdminShell>
-    );
-  }
+  requireFullPortalAccess(profile);
 
   const businessFilter = getBusinessFilter(profile);
   const supabase = createAdminClient();

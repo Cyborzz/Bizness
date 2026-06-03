@@ -4,7 +4,7 @@ import { BusinessTable } from "@/components/admin/BusinessTable";
 import { Input } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/auth/queries";
-import { getBusinessFilter } from "@/lib/permissions";
+import { getBusinessFilter, requireFullPortalAccess } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +20,7 @@ export default async function BusinessesPage({
   const params = (await searchParams) ?? {};
   const q = typeof params.q === "string" ? params.q : "";
   const { profile } = await requireAdmin();
+  requireFullPortalAccess(profile);
   const businessFilter = getBusinessFilter(profile);
   const supabase = createAdminClient();
 

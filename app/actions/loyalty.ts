@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/queries";
-import { canAccessBusiness } from "@/lib/permissions";
+import { canAccessBusiness, canUseFullPortal } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   cardActionSchema,
@@ -116,7 +116,13 @@ export async function removeStampAction(formData: FormData) {
   const parsed = cardActionSchema.safeParse({ cardId: formData.get("cardId") });
   if (!parsed.success) redirect("/admin/cards?error=invalid-card");
 
-  const { user, card } = await assertCardAccess(parsed.data.cardId);
+  const { user, profile } = await requireAdmin();
+  if (!canUseFullPortal(profile)) redirect("/admin/scan");
+
+  const card = await loadCard(parsed.data.cardId);
+  if (!card || !canAccessBusiness(profile, card.business_id)) {
+    redirect("/admin/cards?error=access-denied");
+  }
   if (!card || card.status !== "active") redirect("/admin/cards?error=card-unavailable");
   if (card.current_stamps <= 0) redirect("/admin/cards?error=no-stamp");
 
@@ -143,7 +149,13 @@ export async function redeemRewardAction(formData: FormData) {
   const parsed = cardActionSchema.safeParse({ cardId: formData.get("cardId") });
   if (!parsed.success) redirect("/admin/cards?error=invalid-card");
 
-  const { user, card } = await assertCardAccess(parsed.data.cardId);
+  const { user, profile } = await requireAdmin();
+  if (!canUseFullPortal(profile)) redirect("/admin/scan");
+
+  const card = await loadCard(parsed.data.cardId);
+  if (!card || !canAccessBusiness(profile, card.business_id)) {
+    redirect("/admin/cards?error=access-denied");
+  }
   if (!card || card.status !== "active") redirect("/admin/cards?error=card-unavailable");
   if (card.rewards_available <= 0) redirect("/admin/cards?error=no-reward");
 
@@ -182,7 +194,7 @@ export async function deleteCustomerAction(formData: FormData) {
     redirect("/admin/customers?error=access-denied");
   }
 
-  if (profile.role !== "super_admin" && profile.role !== "business_owner") {
+  if (!canUseFullPortal(profile)) {
     redirect("/admin/customers?error=access-denied");
   }
 
@@ -219,6 +231,9 @@ export async function updateMarketingConsentAction(formData: FormData) {
     .single();
 
   if (!customer || !canAccessBusiness(profile, customer.business_id)) {
+    redirect("/admin/customers?error=access-denied");
+  }
+  if (!canUseFullPortal(profile)) {
     redirect("/admin/customers?error=access-denied");
   }
 

@@ -2,6 +2,7 @@ import { Mail, ShieldCheck, Sparkles } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { requireAdmin, type AdminProfile } from "@/lib/auth/queries";
+import { requireFullPortalAccess } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -24,6 +25,7 @@ const roadmap = [
 
 export default async function SettingsPage() {
   const { profile } = await requireAdmin();
+  requireFullPortalAccess(profile);
   const role = roleLabels[profile.role];
 
   return (

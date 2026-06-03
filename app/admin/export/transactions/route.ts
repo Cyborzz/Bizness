@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/queries";
-import { getBusinessFilter } from "@/lib/permissions";
+import { canUseFullPortal, getBusinessFilter } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { toCsv } from "@/lib/utils/csv";
 
@@ -8,6 +8,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const { profile } = await requireAdmin();
+  if (!canUseFullPortal(profile)) {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
   const supabase = createAdminClient();
   const filter = getBusinessFilter(profile);
 

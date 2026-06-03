@@ -6,7 +6,7 @@ import { PrintButton } from "@/components/admin/PrintButton";
 import { BrandMark } from "@/components/brand/BrandMark";
 import { BRAND } from "@/lib/brand";
 import { requireAdmin } from "@/lib/auth/queries";
-import { requireBusinessAccess } from "@/lib/permissions";
+import { requireBusinessAccess, requireFullPortalAccess } from "@/lib/permissions";
 import { generateBusinessQrUrl, generateQRCodeDataUrl } from "@/lib/qr";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -37,6 +37,7 @@ export default async function BusinessPosterPage({
 }) {
   const { id } = await params;
   const { profile } = await requireAdmin();
+  requireFullPortalAccess(profile);
   requireBusinessAccess(profile, id);
 
   const supabase = createAdminClient();

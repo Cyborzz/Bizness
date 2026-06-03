@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { BrandMark } from "@/components/brand/BrandMark";
 import { BRAND } from "@/lib/brand";
+import type { AdminProfile } from "@/lib/auth/queries";
 import { cn } from "@/lib/utils/cn";
 
 const links = [
@@ -32,10 +33,18 @@ const links = [
   { href: "/admin/settings", label: "Réglages", icon: Settings },
 ];
 
-function NavLinks({ pathname }: { pathname: string }) {
+function getLinks(profile: AdminProfile) {
+  if (profile.role === "staff") {
+    return [{ href: "/admin/scan", label: "Scanner", icon: Camera }];
+  }
+  return links;
+}
+
+function NavLinks({ pathname, profile }: { pathname: string; profile: AdminProfile }) {
+  const visibleLinks = getLinks(profile);
   return (
     <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:block lg:space-y-1 lg:overflow-visible lg:pb-0">
-      {links.map((link) => {
+      {visibleLinks.map((link) => {
         const Icon = link.icon;
         const isActive =
           pathname === link.href || pathname.startsWith(`${link.href}/`);
@@ -66,13 +75,22 @@ function NavLinks({ pathname }: { pathname: string }) {
   );
 }
 
-const mobileLinks = links.filter((link) =>
-  ["/admin/dashboard", "/admin/scan", "/admin/cards", "/admin/customers"].includes(link.href),
-);
+function getMobileLinks(profile: AdminProfile) {
+  if (profile.role === "staff") {
+    return [{ href: "/admin/scan", label: "Scanner", icon: Camera }];
+  }
+  return links.filter((link) =>
+    ["/admin/dashboard", "/admin/scan", "/admin/cards", "/admin/customers"].includes(link.href),
+  );
+}
 
-function MobileQuickNav({ pathname }: { pathname: string }) {
+function MobileQuickNav({ pathname, profile }: { pathname: string; profile: AdminProfile }) {
+  const mobileLinks = getMobileLinks(profile);
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-border bg-white px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0_-10px_30px_rgba(15,23,42,0.12)] lg:hidden">
+    <nav
+      className="fixed inset-x-0 bottom-0 z-40 grid border-t border-border bg-white px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0_-10px_30px_rgba(15,23,42,0.12)] lg:hidden"
+      style={{ gridTemplateColumns: `repeat(${mobileLinks.length}, minmax(0, 1fr))` }}
+    >
       {mobileLinks.map((link) => {
         const Icon = link.icon;
         const isActive =
@@ -96,10 +114,11 @@ function MobileQuickNav({ pathname }: { pathname: string }) {
   );
 }
 
-export function AdminSidebar() {
+export function AdminSidebar({ profile }: { profile: AdminProfile }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
+  const homeHref = profile.role === "staff" ? "/admin/scan" : "/admin/dashboard";
 
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
@@ -124,7 +143,7 @@ export function AdminSidebar() {
         )}
       >
         <div className="flex h-20 items-center justify-between px-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-3 font-black">
+          <Link href={homeHref} className="flex items-center gap-3 font-black">
             <BrandMark size={44} className="ring-1 ring-white/15" />
             <span>
               {BRAND.name}
@@ -142,7 +161,7 @@ export function AdminSidebar() {
             <X aria-hidden className="h-5 w-5" />
           </button>
         </div>
-        <NavLinks pathname={pathname} />
+        <NavLinks pathname={pathname} profile={profile} />
         <div className="hidden p-4 lg:block">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sun text-ink shadow-md">
@@ -150,7 +169,9 @@ export function AdminSidebar() {
             </div>
             <p className="mt-4 text-sm font-black">MVP terrain</p>
             <p className="mt-1 text-xs leading-5 text-white/55">
-              Crée un commerce, partage le QR, ajoute les tampons. Tout reste lisible.
+              {profile.role === "staff"
+                ? "Scanne la carte client, ajoute le tampon, garde le passage fluide."
+                : "Crée un commerce, partage le QR, ajoute les tampons. Tout reste lisible."}
             </p>
           </div>
         </div>
@@ -165,7 +186,7 @@ export function AdminSidebar() {
         />
       ) : null}
 
-      <MobileQuickNav pathname={pathname} />
+      <MobileQuickNav pathname={pathname} profile={profile} />
     </>
   );
 }

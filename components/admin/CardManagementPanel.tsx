@@ -30,7 +30,15 @@ type CardRow = {
   } | null;
 };
 
-export function CardManagementPanel({ cards }: { cards: CardRow[] }) {
+export function CardManagementPanel({
+  cards,
+  role,
+}: {
+  cards: CardRow[];
+  role?: "super_admin" | "business_owner" | "staff";
+}) {
+  const isStaff = role === "staff";
+
   return (
     <div className="grid gap-4">
       {cards.map((card) => {
@@ -102,7 +110,13 @@ export function CardManagementPanel({ cards }: { cards: CardRow[] }) {
                 </div>
               </div>
             </div>
-            <div className="grid gap-2 border-t border-border bg-surface-muted/40 p-4 sm:grid-cols-[1fr_1fr_1fr_auto]">
+            <div
+              className={
+                isStaff
+                  ? "grid gap-2 border-t border-border bg-surface-muted/40 p-4 sm:grid-cols-1"
+                  : "grid gap-2 border-t border-border bg-surface-muted/40 p-4 sm:grid-cols-[1fr_1fr_1fr_auto]"
+              }
+            >
               <form action={addStampAction} className={isPoints ? "flex gap-2" : ""}>
                 <input type="hidden" name="cardId" value={card.id} />
                 {isPoints ? (
@@ -121,33 +135,37 @@ export function CardManagementPanel({ cards }: { cards: CardRow[] }) {
                   {isPoints ? "Créditer" : "+1 tampon"}
                 </Button>
               </form>
-              <form action={removeStampAction}>
-                <input type="hidden" name="cardId" value={card.id} />
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  className="w-full"
-                  disabled={card.status !== "active" || card.current_stamps === 0}
-                >
-                  <Minus aria-hidden className="h-4 w-4" />
-                  {isPoints ? "-1 point" : "-1 tampon"}
-                </Button>
-              </form>
-              <form action={redeemRewardAction}>
-                <input type="hidden" name="cardId" value={card.id} />
-                <Button
-                  type="submit"
-                  variant={hasReward ? "mint" : "dark"}
-                  className="w-full"
-                  disabled={!hasReward}
-                >
-                  <Gift aria-hidden className="h-4 w-4" />
-                  Utiliser récompense
-                </Button>
-              </form>
-              <LinkButton href={`/card/${card.id}`} variant="ghost" size="md">
-                Carte client
-              </LinkButton>
+              {!isStaff ? (
+                <>
+                  <form action={removeStampAction}>
+                    <input type="hidden" name="cardId" value={card.id} />
+                    <Button
+                      type="submit"
+                      variant="secondary"
+                      className="w-full"
+                      disabled={card.status !== "active" || card.current_stamps === 0}
+                    >
+                      <Minus aria-hidden className="h-4 w-4" />
+                      {isPoints ? "-1 point" : "-1 tampon"}
+                    </Button>
+                  </form>
+                  <form action={redeemRewardAction}>
+                    <input type="hidden" name="cardId" value={card.id} />
+                    <Button
+                      type="submit"
+                      variant={hasReward ? "mint" : "dark"}
+                      className="w-full"
+                      disabled={!hasReward}
+                    >
+                      <Gift aria-hidden className="h-4 w-4" />
+                      Utiliser récompense
+                    </Button>
+                  </form>
+                  <LinkButton href={`/card/${card.id}`} variant="ghost" size="md">
+                    Carte client
+                  </LinkButton>
+                </>
+              ) : null}
             </div>
           </div>
         );

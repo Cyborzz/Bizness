@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { BusinessForm } from "@/components/admin/BusinessForm";
 import { requireAdmin } from "@/lib/auth/queries";
+import { requireFullPortalAccess } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -11,6 +12,7 @@ export const metadata = {
 
 export default async function NewBusinessPage() {
   const { profile } = await requireAdmin();
+  requireFullPortalAccess(profile);
 
   return (
     <AdminShell profile={profile}>

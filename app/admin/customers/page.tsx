@@ -6,7 +6,7 @@ import { ToastBanner } from "@/components/ui/toast-banner";
 import { Input, Select } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/auth/queries";
-import { getBusinessFilter } from "@/lib/permissions";
+import { getBusinessFilter, requireFullPortalAccess } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +25,7 @@ export default async function CustomersPage({
   const success = typeof params.success === "string" ? params.success : undefined;
   const error = typeof params.error === "string" ? params.error : undefined;
   const { profile } = await requireAdmin();
+  requireFullPortalAccess(profile);
   const businessFilter = getBusinessFilter(profile);
   const supabase = createAdminClient();
 

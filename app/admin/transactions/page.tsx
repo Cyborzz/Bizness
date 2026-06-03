@@ -1,7 +1,7 @@
 import { AdminShell } from "@/components/admin/AdminShell";
 import { TransactionTable } from "@/components/admin/TransactionTable";
 import { requireAdmin } from "@/lib/auth/queries";
-import { getBusinessFilter } from "@/lib/permissions";
+import { getBusinessFilter, requireFullPortalAccess } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +11,7 @@ export const metadata = {
 
 export default async function TransactionsPage() {
   const { profile } = await requireAdmin();
+  requireFullPortalAccess(profile);
   const businessFilter = getBusinessFilter(profile);
   const supabase = createAdminClient();
 

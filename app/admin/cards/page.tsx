@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { Search } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { CardManagementPanel } from "@/components/admin/CardManagementPanel";
@@ -25,6 +26,10 @@ export default async function CardsPage({
   const success = typeof params.success === "string" ? params.success : undefined;
   const error = typeof params.error === "string" ? params.error : undefined;
   const { profile } = await requireAdmin();
+  const isStaff = profile.role === "staff";
+  if (isStaff && !cardId) {
+    redirect("/admin/scan");
+  }
   const businessFilter = getBusinessFilter(profile);
   const supabase = createAdminClient();
 
@@ -43,7 +48,7 @@ export default async function CardsPage({
     if (customerIds.length === 0) {
       return (
         <AdminShell profile={profile}>
-          <CardsHeader q={q} success={success} error={error} />
+          <CardsHeader q={q} success={success} error={error} isStaff={isStaff} />
           <EmptyState title="Aucun client ne correspond">
             Essayez un autre prénom, un numéro ou un email.
           </EmptyState>
@@ -69,9 +74,15 @@ export default async function CardsPage({
 
   return (
     <AdminShell profile={profile}>
-      <CardsHeader q={q} success={success} error={error} scanned={Boolean(cardId)} />
+      <CardsHeader
+        q={q}
+        success={success}
+        error={error}
+        scanned={Boolean(cardId)}
+        isStaff={isStaff}
+      />
       {cards?.length ? (
-        <CardManagementPanel cards={cards} />
+        <CardManagementPanel cards={cards} role={profile.role} />
       ) : (
         <EmptyState title="Aucune carte trouvée">
           {cardId
@@ -88,11 +99,13 @@ function CardsHeader({
   success,
   error,
   scanned,
+  isStaff,
 }: {
   q: string;
   success?: string;
   error?: string;
   scanned?: boolean;
+  isStaff?: boolean;
 }) {
   return (
     <div className="mb-6 space-y-6">
@@ -100,35 +113,44 @@ function CardsHeader({
         <p className="text-xs font-black uppercase tracking-normal text-primary">Cartes actives</p>
         <h1 className="mt-1 text-3xl font-black tracking-tight text-ink">Cartes</h1>
         <p className="mt-1 text-muted">
-          Ajouter ou retirer des tampons, utiliser une récompense.
+          {isStaff
+            ? "Carte scannée : ajoutez le tampon du passage."
+            : "Ajouter ou retirer des tampons, utiliser une récompense."}
         </p>
       </div>
       {scanned ? (
         <div className="rounded-lg border border-mint/30 bg-mint-soft px-4 py-3 text-sm font-semibold text-mint">
-          Carte scannée — vous pouvez créditer le tampon ci-dessous.{" "}
-          <a href="/admin/cards" className="underline">
-            Voir toutes les cartes
-          </a>
+          Carte scannée — vous pouvez créditer le tampon ci-dessous.
+          {!isStaff ? (
+            <>
+              {" "}
+              <a href="/admin/cards" className="underline">
+                Voir toutes les cartes
+              </a>
+            </>
+          ) : null}
         </div>
       ) : null}
       <ToastBanner success={success} error={error} />
-      <form className="grid gap-2 sm:grid-cols-[1fr_auto] sm:max-w-xl">
-        <div className="relative">
-          <Search
-            aria-hidden
-            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-2"
-          />
-          <Input
-            name="q"
-            placeholder="Prénom, nom, téléphone ou email"
-            defaultValue={q}
-            className="pl-9"
-          />
-        </div>
-        <Button type="submit" variant="dark">
-          Rechercher
-        </Button>
-      </form>
+      {!isStaff ? (
+        <form className="grid gap-2 sm:grid-cols-[1fr_auto] sm:max-w-xl">
+          <div className="relative">
+            <Search
+              aria-hidden
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-2"
+            />
+            <Input
+              name="q"
+              placeholder="Prénom, nom, téléphone ou email"
+              defaultValue={q}
+              className="pl-9"
+            />
+          </div>
+          <Button type="submit" variant="dark">
+            Rechercher
+          </Button>
+        </form>
+      ) : null}
     </div>
   );
 }

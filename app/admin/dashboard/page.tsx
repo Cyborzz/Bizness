@@ -16,7 +16,7 @@ import { StatsChart } from "@/components/admin/StatsChart";
 import { TransactionTable } from "@/components/admin/TransactionTable";
 import { LinkButton } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/auth/queries";
-import { getBusinessFilter } from "@/lib/permissions";
+import { getBusinessFilter, requireFullPortalAccess } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +29,7 @@ const ACTIVE_DAYS = 30;
 
 export default async function DashboardPage() {
   const { profile } = await requireAdmin();
+  requireFullPortalAccess(profile);
   const businessFilter = getBusinessFilter(profile);
   const supabase = createAdminClient();
 
