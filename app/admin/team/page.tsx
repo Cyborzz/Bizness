@@ -1,25 +1,16 @@
 import { Users } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { InviteMemberForm } from "@/components/admin/InviteMemberForm";
-import { Badge, type BadgeTone } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { TeamMemberList } from "@/components/admin/TeamMemberList";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ToastBanner } from "@/components/ui/toast-banner";
 import { requireAdmin, type AdminProfile } from "@/lib/auth/queries";
 import { getBusinessFilter } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { removeMemberAction } from "@/app/actions/team";
-import { formatDate } from "@/lib/utils/format";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Équipe",
-};
-
-const roleLabels: Record<AdminProfile["role"], { label: string; tone: BadgeTone }> = {
-  super_admin: { label: "Super admin", tone: "violet" },
-  business_owner: { label: "Owner", tone: "primary" },
-  staff: { label: "Staff", tone: "mint" },
 };
 
 export default async function TeamPage({
@@ -85,48 +76,13 @@ export default async function TeamPage({
           </div>
           <div>
             <h2 className="text-lg font-black text-ink">Membres actuels</h2>
-            <div className="mt-4 space-y-3">
-              {(members ?? []).map((member) => {
-                const role =
-                  roleLabels[member.role as AdminProfile["role"]] ?? roleLabels.staff;
-                const isSelf = member.id === user.id;
-                return (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-white p-4 shadow-sm"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="truncate font-black text-ink">{member.email}</p>
-                        {isSelf ? <Badge tone="primary">Vous</Badge> : null}
-                      </div>
-                      <div className="mt-1 flex items-center gap-2 text-xs text-muted">
-                        <Badge tone={role.tone}>{role.label}</Badge>
-                        {member.businesses?.name ? (
-                          <span>{member.businesses.name}</span>
-                        ) : null}
-                        <span>· depuis {formatDate(member.created_at)}</span>
-                      </div>
-                    </div>
-                    {!isSelf ? (
-                      <form
-                        action={removeMemberAction}
-                        onSubmit={(event) => {
-                          if (!window.confirm(`Retirer ${member.email} de l'équipe ?`)) {
-                            event.preventDefault();
-                          }
-                        }}
-                      >
-                        <input type="hidden" name="userId" value={member.id} />
-                        <Button type="submit" size="sm" variant="ghost">
-                          Retirer
-                        </Button>
-                      </form>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
+            <TeamMemberList
+              members={(members ?? []).map((member) => ({
+                ...member,
+                role: member.role as AdminProfile["role"],
+              }))}
+              currentUserId={user.id}
+            />
           </div>
         </div>
       </div>
