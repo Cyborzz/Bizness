@@ -61,7 +61,10 @@ export default async function BusinessesPage({
             </Button>
           </form>
         </div>
-        <BusinessTable businesses={businesses ?? []} />
+        <BusinessTable
+          businesses={businesses ?? []}
+          canDelete={profile.role === "super_admin"}
+        />
       </div>
     </AdminShell>
   );

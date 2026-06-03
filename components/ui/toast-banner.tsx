@@ -8,6 +8,7 @@ const successMessages: Record<string, string> = {
   "consent-updated": "Consentement mis à jour.",
   "business-created": "Commerce créé.",
   "business-updated": "Commerce mis à jour.",
+  "business-deleted": "Commerce supprimé.",
   "offer-created": "Offre enregistrée en brouillon.",
   "offer-sent": "Offre envoyée aux abonnés.",
   "offer-deleted": "Offre supprimée.",
@@ -24,6 +25,8 @@ const errorMessages: Record<string, string> = {
   "no-reward": "Aucune récompense disponible.",
   "invalid-customer": "Client invalide.",
   "access-denied": "Accès refusé.",
+  "invalid-business": "Commerce invalide.",
+  "business-delete-failed": "Suppression du commerce impossible.",
   "invalid-offer": "Offre invalide.",
   "already-sent": "Cette offre a déjà été envoyée.",
   "push-not-configured":

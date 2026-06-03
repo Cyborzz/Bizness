@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CreditCard, ExternalLink, Printer, Stamp, Users } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { BusinessForm } from "@/components/admin/BusinessForm";
+import { DeleteBusinessButton } from "@/components/admin/DeleteBusinessButton";
 import { QRCodeCard } from "@/components/admin/QRCodeCard";
 import { StatCard } from "@/components/admin/StatCard";
 import { TransactionTable } from "@/components/admin/TransactionTable";
@@ -95,6 +96,13 @@ export default async function BusinessDetailPage({
               <ExternalLink aria-hidden className="h-4 w-4" />
               Ouvrir la page publique
             </Link>
+            {profile.role === "super_admin" ? (
+              <DeleteBusinessButton
+                businessId={business.id}
+                businessName={business.name}
+                size="md"
+              />
+            ) : null}
           </div>
         </div>
         <ToastBanner success={success} error={error} />

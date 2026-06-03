@@ -1,10 +1,17 @@
 import { Eye, Plus, QrCode } from "lucide-react";
+import { DeleteBusinessButton } from "@/components/admin/DeleteBusinessButton";
 import { Badge } from "@/components/ui/badge";
 import { LinkButton } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Business } from "@/types/business";
 
-export function BusinessTable({ businesses }: { businesses: Business[] }) {
+export function BusinessTable({
+  businesses,
+  canDelete = false,
+}: {
+  businesses: Business[];
+  canDelete?: boolean;
+}) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
       <div className="flex items-center justify-between gap-3 border-b border-border p-4">
@@ -81,6 +88,12 @@ export function BusinessTable({ businesses }: { businesses: Business[] }) {
                         <QrCode aria-hidden className="h-4 w-4" />
                         QR
                       </LinkButton>
+                      {canDelete ? (
+                        <DeleteBusinessButton
+                          businessId={business.id}
+                          businessName={business.name}
+                        />
+                      ) : null}
                     </div>
                   </td>
                 </tr>

@@ -126,3 +126,53 @@ export async function saveBusinessAction(_: BusinessActionState, formData: FormD
   revalidatePath(`/admin/businesses/${businessId}`);
   redirect(redirectTo ?? "/admin/businesses");
 }
+
+export async function deleteBusinessAction(formData: FormData) {
+  const { profile } = await requireAdmin();
+  if (profile.role !== "super_admin") {
+    redirect("/admin/businesses?error=access-denied");
+  }
+
+  const businessId = formData.get("businessId")?.toString();
+  const isUuid =
+    businessId &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      businessId,
+    );
+  if (!isUuid) {
+    redirect("/admin/businesses?error=invalid-business");
+  }
+
+  const supabase = createAdminClient();
+  const { data: business } = await supabase
+    .from("businesses")
+    .select("id,slug")
+    .eq("id", businessId)
+    .maybeSingle();
+
+  if (!business) {
+    redirect("/admin/businesses?error=invalid-business");
+  }
+
+  await supabase
+    .from("admin_users")
+    .delete()
+    .eq("business_id", business.id)
+    .neq("role", "super_admin");
+
+  const { error } = await supabase.from("businesses").delete().eq("id", business.id);
+  if (error) {
+    redirect(`/admin/businesses/${business.id}?error=business-delete-failed`);
+  }
+
+  const { data: logoObjects } = await supabase.storage.from("business-logos").list(business.slug);
+  if (logoObjects?.length) {
+    await supabase.storage
+      .from("business-logos")
+      .remove(logoObjects.map((object) => `${business.slug}/${object.name}`));
+  }
+
+  revalidatePath("/admin/businesses");
+  revalidatePath("/admin/dashboard");
+  redirect("/admin/businesses?success=business-deleted");
+}
