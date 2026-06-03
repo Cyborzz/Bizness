@@ -26,7 +26,7 @@ if [ "$current_commit" = "$target_commit" ] && [ "$FORCE_DEPLOY" != "1" ]; then
   exit 0
 fi
 
-GIT_SSH_COMMAND="ssh -i $GITHUB_KEY -o IdentitiesOnly=yes" git pull --ff-only origin "$BRANCH"
+GIT_SSH_COMMAND="ssh -i $GITHUB_KEY -o IdentitiesOnly=yes" git merge --ff-only "origin/$BRANCH"
 
 sudo docker compose --env-file .env.production up -d --build
 sudo docker compose --env-file .env.production ps
