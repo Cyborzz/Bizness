@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, Copy, Download, Mail, Share2, Smartphone } from "lucide-react";
+import { Check, Copy, Download, Mail, Share2, Smartphone, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Props = {
   url: string;
   cardLabel: string;
+  googleWalletHref?: string | null;
 };
 
 type InstallPromptEvent = Event & {
@@ -17,7 +18,7 @@ type InstallPromptEvent = Event & {
 const canShareInitial =
   typeof navigator !== "undefined" && typeof navigator.share === "function";
 
-export function SaveCardActions({ url, cardLabel }: Props) {
+export function SaveCardActions({ url, cardLabel, googleWalletHref }: Props) {
   const [copied, setCopied] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
@@ -85,6 +86,15 @@ export function SaveCardActions({ url, cardLabel }: Props) {
           </p>
         </div>
       </div>
+      {googleWalletHref ? (
+        <a
+          href={googleWalletHref}
+          className="focus-ring btn-press mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-ink px-4 text-sm font-semibold text-white transition hover:bg-ink-2"
+        >
+          <Wallet aria-hidden className="h-5 w-5" />
+          Ajouter à Google Wallet
+        </a>
+      ) : null}
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         {installed ? (
           <div className="rounded-lg border border-border bg-surface-muted px-3 py-2.5 text-sm font-semibold text-mint">

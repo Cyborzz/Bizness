@@ -38,6 +38,11 @@ NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
 VAPID_SUBJECT=mailto:hello@fidelise-moi.fr
 
+# Google Wallet (optionnel — voir docs/ROADMAP_WALLET.md)
+# Si vide, le bouton « Ajouter à Google Wallet » est masqué (aucun crash).
+GOOGLE_WALLET_ISSUER_ID=
+GOOGLE_WALLET_SERVICE_ACCOUNT=
+
 # V2 — Stripe (compte stripe.com requis)
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=

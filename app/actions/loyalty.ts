@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/queries";
 import { canAccessBusiness, canUseFullPortal } from "@/lib/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyWalletPassUpdate } from "@/lib/wallet/notify";
 import {
   cardActionSchema,
   deleteCustomerSchema,
@@ -108,6 +109,8 @@ export async function addStampAction(formData: FormData) {
       : []),
   ]);
 
+  await notifyWalletPassUpdate(card.id);
+
   revalidatePath("/admin/cards");
   redirect("/admin/cards?success=stamp-added");
 }
@@ -141,6 +144,8 @@ export async function removeStampAction(formData: FormData) {
     created_by: user.id,
   });
 
+  await notifyWalletPassUpdate(card.id);
+
   revalidatePath("/admin/cards");
   redirect("/admin/cards?success=stamp-removed");
 }
@@ -173,6 +178,8 @@ export async function redeemRewardAction(formData: FormData) {
     value: -1,
     created_by: user.id,
   });
+
+  await notifyWalletPassUpdate(card.id);
 
   revalidatePath("/admin/cards");
   redirect("/admin/cards?success=reward-redeemed");

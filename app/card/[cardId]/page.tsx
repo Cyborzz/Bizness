@@ -15,6 +15,7 @@ import {
   startOfYearISO,
 } from "@/lib/loyalty/milestones";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isGoogleWalletConfigured } from "@/lib/wallet/env";
 
 export const dynamic = "force-dynamic";
 
@@ -111,7 +112,13 @@ export default async function CustomerCardPage({
 
         {qrDataUrl ? <CardQRCode dataUrl={qrDataUrl} /> : null}
 
-        <SaveCardActions url={cardUrl} cardLabel={`Carte ${business.name}`} />
+        <SaveCardActions
+          url={cardUrl}
+          cardLabel={`Carte ${business.name}`}
+          googleWalletHref={
+            !inactive && isGoogleWalletConfigured() ? `/api/wallet/google/${card.id}` : null
+          }
+        />
 
         <PushSubscribeButton
           cardId={card.id}

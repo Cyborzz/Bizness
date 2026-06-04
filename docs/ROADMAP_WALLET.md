@@ -1,8 +1,16 @@
 # Roadmap — Pass Apple Wallet & Google Wallet
 
-> Analyse / plan d'implémentation. Aucun code n'est encore écrit côté wallet.
 > Objectif : permettre au client d'ajouter sa carte de fidélité dans **Apple Wallet**
 > et **Google Wallet**, avec mise à jour automatique du nombre de tampons.
+
+## Statut
+
+- ✅ **Phase 1 — Google Wallet : CODE LIVRÉ.** Bouton « Ajouter à Google Wallet » sur
+  la carte client + mise à jour automatique des tampons à chaque scan. La
+  fonctionnalité s'active **uniquement** quand les variables d'environnement Google
+  sont renseignées (sinon rien n'apparaît, aucun crash). **Action requise côté
+  Google** : voir « Configuration Google » ci-dessous.
+- ⏳ Phases 2 à 3 — Apple Wallet : à faire (analyse ci-dessous).
 
 ## 1. Pourquoi (contexte marché)
 
@@ -108,6 +116,34 @@ Implémenter le protocole PassKit (auth header `Authorization: ApplePass <token>
 - Google propage la mise à jour **automatiquement** : pas de push par appareil à gérer
   (plus simple qu'Apple).
 
+### Configuration Google (à faire une fois, côté compte)
+
+Implémentation déjà en place dans le code :
+[lib/wallet/google.ts](../lib/wallet/google.ts),
+[lib/wallet/env.ts](../lib/wallet/env.ts),
+[lib/wallet/notify.ts](../lib/wallet/notify.ts),
+route [app/api/wallet/google/[cardId]/route.ts](../app/api/wallet/google/%5BcardId%5D/route.ts),
+bouton dans [components/customer/SaveCardActions.tsx](../components/customer/SaveCardActions.tsx).
+
+Étapes console (sans toucher au code) :
+
+1. **Google Cloud** : créer/choisir un projet, activer **Google Wallet API**.
+2. **Compte de service** : en créer un, générer une **clé JSON** (= secret).
+3. **Google Pay & Wallet Console** (pay.google.com/business/console) : récupérer
+   l'**Issuer ID**, et y **autoriser le compte de service** (rôle éditeur).
+4. **Variables d'environnement** (serveur uniquement, jamais commitées) :
+   - `GOOGLE_WALLET_ISSUER_ID` = l'Issuer ID
+   - `GOOGLE_WALLET_SERVICE_ACCOUNT` = le contenu du JSON (brut **ou** base64)
+     - astuce VPS : `base64 -w0 service-account.json` pour une seule ligne.
+5. **Rebuild** sur OVH (les variables sont lues côté serveur) :
+   `docker compose --env-file .env.production up -d --build`.
+6. **Vérifier** : ouvrir une carte `/card/<id>` → le bouton « Ajouter à Google
+   Wallet » apparaît ; l'ajout crée le pass ; un nouveau tampon le met à jour.
+
+> Tant que l'Issuer n'est pas validé par Google, les pass restent en
+> `UNDER_REVIEW` (visibles par les comptes de test de l'Issuer). Demander la
+> validation pour le grand public.
+
 ## 6. Changements de données (Supabase)
 
 Nouvelle table (ex. `wallet_passes`) liée à `cards` :
@@ -149,8 +185,9 @@ components/customer/
 
 ## 9. Phasage proposé
 
-1. **Phase 1 — Google Wallet d'abord** (le plus simple : pas de push par appareil,
-   pas de certificat payant). Bouton « Add to Google Wallet » + update auto. *(~2–3 j)*
+1. ✅ **Phase 1 — Google Wallet** (le plus simple : pas de push par appareil, pas de
+   certificat payant). Bouton « Add to Google Wallet » + update auto. **Code livré**
+   (reste la config console + secrets côté compte Google).
 2. **Phase 2 — Apple Wallet** : compte développeur, certificats, génération `.pkpass`,
    bouton d'ajout. *(~3–4 j)*
 3. **Phase 3 — Updates live Apple** : web service PassKit + push APNs sur ajout de
