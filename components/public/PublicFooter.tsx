@@ -79,7 +79,7 @@ export function PublicFooter() {
       <div className="border-t border-border">
         <div className="container-page flex flex-col items-center justify-between gap-3 py-5 text-xs text-muted sm:flex-row">
           <p>© {new Date().getFullYear()} {BRAND.name}. Tous droits réservés.</p>
-          <p>Construit avec Next.js et Supabase.</p>
+          <p>Hébergé en France · Conforme RGPD</p>
         </div>
       </div>
     </footer>
