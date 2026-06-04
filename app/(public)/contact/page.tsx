@@ -22,8 +22,9 @@ export default function ContactPage() {
                 Demander une démo
               </h1>
               <p className="mt-4 text-muted">
-                Enregistre la demande dans Supabase. Pour le MVP, pas de paiement ni
-                d&apos;automatisation commerciale.
+                Dites-nous votre commerce et la récompense que vous voulez offrir. On vous montre la
+                carte, le QR code et le tableau de bord, puis on configure tout pour vous. Sans
+                engagement.
               </p>
               <div className="mt-6 space-y-3">
                 <div className="flex items-start gap-3 rounded-2xl border border-border bg-white p-4 shadow-sm">
@@ -40,10 +41,13 @@ export default function ContactPage() {
                 <div className="rounded-2xl bg-ink p-5 text-white shadow-xl">
                   <div className="flex items-center gap-2">
                     <Sparkles aria-hidden className="h-4 w-4 text-sun" />
-                    <p className="text-sm font-bold text-white/60">Objectif terrain</p>
+                    <p className="text-sm font-bold text-white/60">Ce qui se passe ensuite</p>
                   </div>
                   <p className="mt-2 text-xl font-black">
-                    Répondre vite, montrer la démo, créer le commerce.
+                    Démo en direct, puis votre carte prête en 48h.
+                  </p>
+                  <p className="mt-2 text-sm text-white/70">
+                    Sans engagement, sans carte bancaire. Vous gardez la main sur vos données.
                   </p>
                 </div>
               </div>

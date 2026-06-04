@@ -85,7 +85,7 @@ function PhoneMockup() {
 
 function CounterMockup() {
   return (
-    <div className="glass-panel absolute -left-3 bottom-6 hidden w-56 rounded-lg p-4 text-white sm:block lg:-left-6">
+    <div className="glass-panel absolute -left-3 bottom-6 z-20 hidden w-52 rounded-lg p-4 text-white sm:block lg:-left-6">
       <div className="flex items-center gap-3">
         <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white text-ink">
           <QrCode aria-hidden className="h-6 w-6" />
@@ -115,7 +115,7 @@ export function HeroSection() {
   return (
     <section className="fine-noise relative overflow-hidden bg-ink text-white">
       <Image
-        src="/hero-loyalty-saas.png"
+        src="/hero-loyalty-saas.webp"
         alt=""
         aria-hidden
         fill
@@ -186,7 +186,7 @@ export function HeroSection() {
 
         <div className="relative min-h-[560px]">
           <Reveal delay={120}>
-            <div className="absolute right-0 top-5 hidden w-64 rounded-lg border border-white/15 bg-white/10 p-4 text-white backdrop-blur-xl lg:block">
+            <div className="absolute right-0 top-0 z-20 hidden w-60 rounded-lg border border-white/20 bg-ink/70 p-4 text-white shadow-2xl backdrop-blur-xl lg:block">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-black">Aujourd&apos;hui</p>
                 <span className="rounded-full bg-mint px-2 py-1 text-xs font-black text-white">
@@ -211,12 +211,12 @@ export function HeroSection() {
               </div>
             </div>
           </Reveal>
-          <div className="absolute left-1/2 top-8 w-full -translate-x-1/2 lg:top-20">
+          <div className="absolute left-1/2 top-8 z-0 w-full -translate-x-1/2 lg:top-20">
             <PhoneMockup />
           </div>
           <CounterMockup />
           <Reveal delay={200}>
-            <div className="absolute bottom-0 right-0 w-full max-w-md rounded-lg border border-white/10 bg-white p-4 text-ink shadow-[0_30px_90px_rgba(0,0,0,0.30)]">
+            <div className="absolute bottom-0 right-0 z-20 w-full max-w-sm rounded-lg border border-white/10 bg-white p-4 text-ink shadow-[0_30px_90px_rgba(0,0,0,0.30)]">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-bold uppercase text-muted-2">Action caisse</p>

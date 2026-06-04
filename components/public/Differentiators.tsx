@@ -1,4 +1,4 @@
-import { ArrowRight, BellRing, MapPin, Smartphone } from "lucide-react";
+import { ArrowRight, BellRing, MapPin, Wallet } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 
@@ -18,10 +18,10 @@ const items = [
     accent: "from-mint to-primary",
   },
   {
-    badge: "Sans friction",
-    title: "Zéro app, zéro wallet à configurer",
-    text: "Un simple lien : le client n'installe rien et ne paramètre aucun pass. 0 € pour lui, prêt en 48 h pour vous. La simplicité comme avantage.",
-    icon: Smartphone,
+    badge: "Nouveau",
+    title: "Carte dans Google Wallet",
+    text: "Vos clients ajoutent leur carte à Google Wallet en un tap — les tampons se mettent à jour tout seuls. Ou juste un lien, sans app à installer. 0 € pour eux.",
+    icon: Wallet,
     accent: "from-coral to-sun",
   },
 ];

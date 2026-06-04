@@ -1,8 +1,9 @@
-import { CalendarX2, MapPin, ShieldCheck, Smartphone, Zap } from "lucide-react";
+import { CalendarX2, MapPin, ShieldCheck, Smartphone, Wallet, Zap } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 
 const signals = [
   { label: "Sans application", sub: "Le client n'installe rien", icon: Smartphone },
+  { label: "Dans Google Wallet", sub: "Ajout en un tap", icon: Wallet },
   { label: "Conforme RGPD", sub: "Consentement & suppression", icon: ShieldCheck },
   { label: "Hébergé en France", sub: "Serveur dédié OVH", icon: MapPin },
   { label: "Sans engagement", sub: "On arrête quand vous voulez", icon: CalendarX2 },
@@ -12,7 +13,7 @@ const signals = [
 export function TrustStrip() {
   return (
     <section className="border-y border-border bg-white">
-      <div className="container-page grid grid-cols-2 gap-x-4 gap-y-6 py-8 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="container-page grid grid-cols-2 gap-x-4 gap-y-6 py-8 sm:grid-cols-3 lg:grid-cols-6">
         {signals.map((signal, index) => {
           const Icon = signal.icon;
           return (

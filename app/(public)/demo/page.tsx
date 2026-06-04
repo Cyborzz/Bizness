@@ -1,6 +1,8 @@
+import { ArrowRight } from "lucide-react";
 import { DemoLoyaltyCard } from "@/components/public/DemoLoyaltyCard";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicNav } from "@/components/public/PublicNav";
+import { LinkButton } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 
 export const metadata = {
@@ -37,6 +39,21 @@ export default function DemoPage() {
           <Reveal delay={120}>
             <div className="mt-8">
               <DemoLoyaltyCard />
+            </div>
+          </Reveal>
+
+          <Reveal delay={200}>
+            <div className="mt-10 flex flex-col gap-4 rounded-2xl bg-ink p-6 text-white shadow-xl sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-lg font-black">Convaincu par la mécanique ?</p>
+                <p className="mt-1 text-sm text-white/70">
+                  On crée votre carte personnalisée (couleurs, logo, récompense), prête en 48h.
+                </p>
+              </div>
+              <LinkButton href="/contact" size="lg" className="shimmer">
+                Demander une démo
+                <ArrowRight aria-hidden className="h-5 w-5" />
+              </LinkButton>
             </div>
           </Reveal>
         </div>

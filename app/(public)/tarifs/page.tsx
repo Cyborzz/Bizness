@@ -1,7 +1,8 @@
-import { CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { PricingCards } from "@/components/public/PricingCards";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicNav } from "@/components/public/PublicNav";
+import { LinkButton } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 
 export const metadata = {
@@ -11,9 +12,13 @@ export const metadata = {
 };
 
 const includes = [
+  "Carte dans Google Wallet (ajout en un tap)",
+  "Notifications push pour vos offres",
+  "« Près de vous » : visibilité géolocalisée",
   "QR code haute résolution prêt à imprimer",
   "Configuration du commerce et de la récompense",
   "Accès responsable et comptes staff",
+  "Conforme RGPD, hébergé en France",
   "Mises à jour produit incluses",
 ];
 
@@ -55,6 +60,26 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+          </Reveal>
+
+          <Reveal delay={260}>
+            <div className="mt-8 flex flex-col gap-4 rounded-2xl bg-ink p-6 text-white shadow-xl sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-lg font-black">Pas sûr de la formule ?</p>
+                <p className="mt-1 text-sm text-white/70">
+                  Essayez la démo en direct, puis on en parle — sans engagement.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <LinkButton href="/demo" variant="outline" size="lg">
+                  Essayer la démo
+                </LinkButton>
+                <LinkButton href="/contact" size="lg" className="shimmer">
+                  Demander une démo
+                  <ArrowRight aria-hidden className="h-5 w-5" />
+                </LinkButton>
+              </div>
             </div>
           </Reveal>
         </div>
