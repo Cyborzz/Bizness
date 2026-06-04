@@ -159,15 +159,18 @@ export function HeroSection() {
           </Reveal>
           <Reveal delay={220}>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <LinkButton href="/contact" size="lg" className="shimmer">
+              <LinkButton href="/demo" size="lg" className="shimmer">
+                <PlayCircle aria-hidden className="h-5 w-5" />
+                Essayer la démo en direct
+              </LinkButton>
+              <LinkButton href="/contact" variant="outline" size="lg">
                 Demander une démo
                 <ArrowRight aria-hidden className="h-5 w-5" />
               </LinkButton>
-              <LinkButton href="/demo" variant="outline" size="lg">
-                <PlayCircle aria-hidden className="h-5 w-5" />
-                Voir le parcours
-              </LinkButton>
             </div>
+            <p className="mt-4 text-sm font-semibold text-white/55">
+              Démo en ligne immédiate · sans inscription · sans carte bancaire
+            </p>
           </Reveal>
           <Reveal delay={300}>
             <div className="mt-10 grid max-w-2xl grid-cols-3 overflow-hidden rounded-lg border border-white/10 bg-white/10 backdrop-blur">

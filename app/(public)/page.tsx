@@ -8,6 +8,7 @@ import {
   Store,
   Wrench,
 } from "lucide-react";
+import { Differentiators } from "@/components/public/Differentiators";
 import { FaqSection } from "@/components/public/FaqSection";
 import { FeatureGrid } from "@/components/public/FeatureGrid";
 import { HeroSection } from "@/components/public/HeroSection";
@@ -39,10 +40,10 @@ const businesses = [
 ];
 
 const stats = [
-  { value: 48, suffix: "h", label: "Lancement moyen" },
-  { value: 3, suffix: "x", label: "Parcours plus mémorable" },
-  { value: 0, suffix: " €", label: "Coût pour le client final" },
-  { value: 100, suffix: "%", label: "Mobile-first, sans app" },
+  { value: 5, prefix: "", suffix: "×", label: "plus cher d'acquérir un client que de le fidéliser*" },
+  { value: 25, prefix: "+", suffix: "%", label: "de profits possibles avec seulement +5% de rétention*" },
+  { value: 48, prefix: "", suffix: "h", label: "pour lancer votre carte, QR compris" },
+  { value: 0, prefix: "", suffix: " €", label: "pour vos clients, sans abonnement de leur côté" },
 ];
 
 export default function HomePage() {
@@ -54,24 +55,45 @@ export default function HomePage() {
 
         <TrustStrip />
 
-        <section className="bg-white py-14">
-          <div className="container-page grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat, index) => (
-              <Reveal key={stat.label} delay={index * 90}>
-                <div className="lift rounded-2xl border border-border bg-surface-muted p-5">
-                  <p className="text-4xl font-black tracking-tight text-ink">
-                    <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-muted">{stat.label}</p>
-                </div>
-              </Reveal>
-            ))}
+        <section className="bg-white py-16">
+          <div className="container-page">
+            <Reveal>
+              <div className="mx-auto mb-9 max-w-2xl text-center">
+                <p className="text-sm font-black uppercase tracking-normal text-primary">
+                  Pourquoi la fidélité paie
+                </p>
+                <h2 className="mt-3 text-3xl font-black leading-tight tracking-tight text-ink sm:text-4xl">
+                  Garder un client coûte moins cher que d&apos;en trouver un nouveau.
+                </h2>
+              </div>
+            </Reveal>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {stats.map((stat, index) => (
+                <Reveal key={stat.label} delay={index * 90}>
+                  <div className="lift h-full rounded-2xl border border-border bg-surface-muted p-5">
+                    <p className="text-4xl font-black tracking-tight text-ink">
+                      <AnimatedCounter value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-muted">{stat.label}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+            <Reveal>
+              <p className="mt-6 text-center text-xs text-muted-2">
+                * Ordres de grandeur issus des recherches sur la fidélisation client (Bain &amp;
+                Company, F.&nbsp;Reichheld). Les valeurs 48&nbsp;h et 0&nbsp;€ correspondent à notre
+                offre.
+              </p>
+            </Reveal>
           </div>
         </section>
 
         <HowItWorks />
 
         <MarketProofSection />
+
+        <Differentiators />
 
         <section className="bg-white py-20">
           <div className="container-page grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
@@ -277,10 +299,15 @@ export default function HomePage() {
               </div>
             </Reveal>
             <Reveal delay={120}>
-              <LinkButton href="/contact" size="lg" className="shimmer">
-                Demander une démo
-                <ArrowRight aria-hidden className="h-5 w-5" />
-              </LinkButton>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <LinkButton href="/demo" size="lg" className="shimmer">
+                  Essayer la démo en direct
+                  <ArrowRight aria-hidden className="h-5 w-5" />
+                </LinkButton>
+                <LinkButton href="/contact" variant="outline" size="lg">
+                  Demander une démo
+                </LinkButton>
+              </div>
             </Reveal>
           </div>
         </section>
