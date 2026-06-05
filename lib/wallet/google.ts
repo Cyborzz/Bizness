@@ -18,6 +18,8 @@ type WalletBusiness = {
   stamps_required?: number | null;
   points_required?: number | null;
   loyalty_type?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
 const SCOPE = "https://www.googleapis.com/auth/wallet_object.issuer";
@@ -159,6 +161,14 @@ export function buildGoogleWalletSaveUrl(params: {
     textModulesData: buildTextModules(card, business),
     barcode: { type: "QR_CODE", value: cardUrl, alternateText: "Carte fidélité" },
   };
+
+  // Géolocalisation : la carte remonte sur l'écran de verrouillage quand le
+  // client est à proximité du commerce (Google Wallet gère le déclenchement).
+  if (typeof business.latitude === "number" && typeof business.longitude === "number") {
+    loyaltyObject.locations = [
+      { latitude: business.latitude, longitude: business.longitude },
+    ];
+  }
 
   const claims = {
     iss: config.clientEmail,

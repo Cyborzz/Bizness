@@ -7,6 +7,7 @@ import {
   Percent,
   Repeat,
   Stamp,
+  Trophy,
   UserPlus,
   Users,
 } from "lucide-react";
@@ -64,6 +65,12 @@ export default async function DashboardPage() {
     .select("customer_id")
     .eq("type", "stamp_added")
     .gte("created_at", since30.toISOString());
+  let topCardsQuery = supabase
+    .from("loyalty_cards")
+    .select("id,total_stamps,rewards_available,customers(first_name,last_name)")
+    .eq("status", "active")
+    .order("total_stamps", { ascending: false })
+    .limit(10);
 
   if (businessFilter) {
     businessesQuery = businessesQuery.eq("id", businessFilter);
@@ -74,6 +81,7 @@ export default async function DashboardPage() {
     rewardsEarnedQuery = rewardsEarnedQuery.eq("business_id", businessFilter);
     rewardsRedeemedQuery = rewardsRedeemedQuery.eq("business_id", businessFilter);
     activeEventsQuery = activeEventsQuery.eq("business_id", businessFilter);
+    topCardsQuery = topCardsQuery.eq("business_id", businessFilter);
   }
 
   const [
@@ -85,6 +93,7 @@ export default async function DashboardPage() {
     { count: rewardsEarned },
     { count: rewardsRedeemed },
     { data: activeEvents },
+    { data: topCards },
   ] = await Promise.all([
     businessesQuery,
     customersQuery,
@@ -94,7 +103,22 @@ export default async function DashboardPage() {
     rewardsEarnedQuery,
     rewardsRedeemedQuery,
     activeEventsQuery,
+    topCardsQuery,
   ]);
+
+  // Top 10 clients (par tampons/points cumulés)
+  const topClients = (topCards ?? [])
+    .map((row) => {
+      const c = Array.isArray(row.customers) ? row.customers[0] : row.customers;
+      const name = `${c?.first_name ?? ""} ${c?.last_name ?? ""}`.trim() || "Client";
+      return {
+        id: row.id as string,
+        name,
+        total: (row.total_stamps as number) ?? 0,
+        rewards: (row.rewards_available as number) ?? 0,
+      };
+    })
+    .filter((c) => c.total > 0);
 
   const totalStamps = cards?.reduce((sum, card) => sum + card.total_stamps, 0) ?? 0;
   const rewardsAvailable = cards?.reduce((sum, card) => sum + card.rewards_available, 0) ?? 0;
@@ -240,6 +264,55 @@ export default async function DashboardPage() {
               icon={Gift}
               accent="sun"
             />
+          </div>
+        </div>
+
+        <div>
+          <p className="flex items-center gap-1.5 text-xs font-black uppercase tracking-normal text-primary">
+            <Trophy aria-hidden className="h-4 w-4" />
+            Top 10 clients
+          </p>
+          <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+            {topClients.length === 0 ? (
+              <p className="p-5 text-sm text-muted">
+                Pas encore d&apos;activité client à classer.
+              </p>
+            ) : (
+              <ul className="divide-y divide-border">
+                {topClients.map((client, index) => (
+                  <li
+                    key={client.id}
+                    className="flex items-center justify-between gap-4 px-5 py-3"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span
+                        className={
+                          index < 3
+                            ? "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sun-soft text-xs font-black text-[#9a5b00]"
+                            : "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-muted text-xs font-black text-muted"
+                        }
+                      >
+                        {index + 1}
+                      </span>
+                      <span className="truncate text-sm font-semibold text-ink">
+                        {client.name}
+                      </span>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3 text-xs">
+                      {client.rewards > 0 ? (
+                        <span className="rounded-full bg-mint-soft px-2 py-0.5 font-black text-mint">
+                          {client.rewards} récomp.
+                        </span>
+                      ) : null}
+                      <span className="font-black tabular-nums text-ink">
+                        {client.total}
+                        <span className="ml-1 font-semibold text-muted">cumulés</span>
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
 

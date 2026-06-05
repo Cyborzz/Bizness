@@ -16,7 +16,7 @@ export async function GET(
   const { data } = await supabase
     .from("loyalty_cards")
     .select(
-      "id, business_id, status, current_stamps, rewards_available, businesses(name, logo_url, primary_color, reward_label, stamps_required, points_required, loyalty_type, is_active)",
+      "id, business_id, status, current_stamps, rewards_available, businesses(name, logo_url, primary_color, reward_label, stamps_required, points_required, loyalty_type, is_active, latitude, longitude)",
     )
     .eq("id", cardId)
     .maybeSingle();
@@ -38,6 +38,8 @@ export async function GET(
       points_required: number | null;
       loyalty_type: string | null;
       is_active: boolean;
+      latitude: number | null;
+      longitude: number | null;
     } | null;
   } | null;
 

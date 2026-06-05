@@ -1,4 +1,4 @@
-import { AlertCircle, HelpCircle } from "lucide-react";
+import { AlertCircle, HelpCircle, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LoyaltyCardPreview } from "@/components/loyalty/LoyaltyCardPreview";
@@ -154,6 +154,11 @@ export default async function CustomerCardPage({
             Supprimer mes données
           </Link>
         </div>
+
+        <p className="flex items-center justify-center gap-1.5 text-center text-xs font-semibold text-muted">
+          <ShieldCheck aria-hidden className="h-3.5 w-3.5 text-mint" />
+          Vos données ne sont jamais revendues — partagées uniquement avec {business.name}.
+        </p>
 
         <p className="text-center text-xs text-muted">
           Propulsé par{" "}

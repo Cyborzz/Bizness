@@ -150,7 +150,7 @@ export function LoyaltyCardPreview({ business, card }: LoyaltyCardPreviewProps) 
               {hasReward
                 ? `🎉 ${card.rewards_available} récompense(s) disponible(s) !`
                 : remaining > 0
-                  ? `Plus que ${remaining} ${unit}(s) avant votre récompense`
+                  ? `Plus que ${remaining} ${remaining > 1 ? unitPlural : unit} avant ${business.reward_label}`
                   : "Récompense disponible"}
             </p>
           </div>
