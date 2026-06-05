@@ -39,3 +39,12 @@ export const customerLookupSchema = z.object({
 });
 
 export type CustomerLookupValues = z.infer<typeof customerLookupSchema>;
+
+// Validation de passage en self-service (QR fixe au comptoir).
+export const passageSchema = z.object({
+  business_slug: z.string().trim().min(1),
+  contact: z.string().trim().min(3, "Téléphone ou email requis"),
+  amount: z.coerce.number().optional(),
+});
+
+export type PassageValues = z.infer<typeof passageSchema>;

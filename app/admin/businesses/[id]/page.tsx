@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { ToastBanner } from "@/components/ui/toast-banner";
 import { requireAdmin } from "@/lib/auth/queries";
 import { requireBusinessAccess, requireFullPortalAccess } from "@/lib/permissions";
-import { generateBusinessQrUrl } from "@/lib/qr";
+import { generateBusinessQrUrl, generatePassageQrUrl } from "@/lib/qr";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -57,6 +57,7 @@ export default async function BusinessDetailPage({
     ]);
 
   const publicUrl = generateBusinessQrUrl(business.slug);
+  const passageUrl = generatePassageQrUrl(business.slug);
 
   return (
     <AdminShell profile={profile}>
@@ -128,8 +129,9 @@ export default async function BusinessDetailPage({
         </div>
         <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
           <BusinessForm business={business} />
-          <div id="qr">
-            <QRCodeCard url={publicUrl} title={`QR — ${business.name}`} />
+          <div id="qr" className="space-y-6">
+            <QRCodeCard url={publicUrl} title={`QR inscription — ${business.name}`} />
+            <QRCodeCard url={passageUrl} title="QR comptoir — valider un passage" />
           </div>
         </div>
         <TransactionTable transactions={transactions ?? []} />

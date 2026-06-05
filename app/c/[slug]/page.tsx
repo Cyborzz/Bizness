@@ -27,10 +27,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BusinessSignupPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ ref?: string }>;
 }) {
   const { slug } = await params;
+  const { ref } = await searchParams;
   const supabase = createAdminClient();
   const { data: business } = await supabase
     .from("businesses")
@@ -120,7 +123,13 @@ export default async function BusinessSignupPage({
           </div>
         </section>
 
-        <CustomerSignupForm businessSlug={business.slug} />
+        {ref ? (
+          <div className="flex items-center gap-2 rounded-2xl border border-mint/30 bg-mint-soft px-4 py-3 text-sm font-bold text-mint">
+            🎁 Vous avez été parrainé&nbsp;: une récompense vous attend dès l&apos;inscription.
+          </div>
+        ) : null}
+
+        <CustomerSignupForm businessSlug={business.slug} referralCode={ref ?? null} />
 
         <FindCardForm businessSlug={business.slug} />
 

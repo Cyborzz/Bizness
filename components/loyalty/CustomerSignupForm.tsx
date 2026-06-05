@@ -18,7 +18,13 @@ function SubmitButton() {
   );
 }
 
-export function CustomerSignupForm({ businessSlug }: { businessSlug: string }) {
+export function CustomerSignupForm({
+  businessSlug,
+  referralCode,
+}: {
+  businessSlug: string;
+  referralCode?: string | null;
+}) {
   const router = useRouter();
   const [state, action] = useActionState<SignupState, FormData>(
     createCustomerCardAction,
@@ -37,6 +43,7 @@ export function CustomerSignupForm({ businessSlug }: { businessSlug: string }) {
       className="space-y-4 rounded-[24px] bg-white p-5 shadow-xl ring-1 ring-border"
     >
       <input type="hidden" name="business_slug" value={businessSlug} />
+      {referralCode ? <input type="hidden" name="ref" value={referralCode} /> : null}
       {state.error ? (
         <div
           role="alert"

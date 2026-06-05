@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { LoyaltyCardPreview } from "@/components/loyalty/LoyaltyCardPreview";
 import { TransactionList } from "@/components/loyalty/TransactionList";
 import { PushSubscribeButton } from "@/components/customer/PushSubscribeButton";
+import { ReferralShare } from "@/components/customer/ReferralShare";
 import { SaveCardActions } from "@/components/customer/SaveCardActions";
 import { BirthdayReward } from "@/components/customer/BirthdayReward";
 import { CardQRCode } from "@/components/customer/CardQRCode";
@@ -125,6 +126,14 @@ export default async function CustomerCardPage({
           vapidPublicKey={vapidPublicKey}
           businessName={business.name}
         />
+
+        {inactive ? null : (
+          <ReferralShare
+            shareUrl={`${appUrl}/c/${business.slug}?ref=${card.id}`}
+            businessName={business.name}
+            rewardLabel={business.reward_label}
+          />
+        )}
 
         <section className="rounded-[24px] bg-white p-5 shadow-xl ring-1 ring-border">
           <div className="flex items-center justify-between">

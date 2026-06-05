@@ -12,12 +12,85 @@ import {
 import {
   customerLookupSchema,
   customerSignupSchema,
+  passageSchema,
 } from "@/lib/validators/customer";
+import { notifyWalletPassUpdate } from "@/lib/wallet/notify";
 
 export type SignupState = {
   error?: string;
   cardId?: string;
 };
+
+// Applique un parrainage : +1 récompense pour le parrain ET le filleul.
+// Best-effort (ne lève jamais) et « fail-closed » : la table `referrals` sert de
+// garde (dédoublonnage + FK). Si la migration n'est pas appliquée, l'insert
+// échoue et aucune récompense n'est accordée — l'inscription reste intacte.
+async function applyReferral(
+  supabase: ReturnType<typeof createAdminClient>,
+  businessId: string,
+  referrerCardId: string,
+  referredCardId: string,
+  referredCustomerId: string,
+) {
+  try {
+    if (!referrerCardId || referrerCardId === referredCardId) return;
+
+    const { data: referrer } = await supabase
+      .from("loyalty_cards")
+      .select("id,business_id,status,customer_id,rewards_available")
+      .eq("id", referrerCardId)
+      .maybeSingle();
+    if (
+      !referrer ||
+      referrer.status !== "active" ||
+      referrer.business_id !== businessId
+    ) {
+      return;
+    }
+
+    // Garde-fou : enregistre le parrainage AVANT de créditer. unique(referred_card_id)
+    // + FK empêchent doublon / carte invalide. Échec => on n'accorde rien.
+    const { error: refErr } = await supabase.from("referrals").insert({
+      business_id: businessId,
+      referrer_card_id: referrer.id,
+      referred_card_id: referredCardId,
+    });
+    if (refErr) return;
+
+    await supabase
+      .from("loyalty_cards")
+      .update({ rewards_available: referrer.rewards_available + 1 })
+      .eq("id", referrer.id);
+    await supabase
+      .from("loyalty_cards")
+      .update({ rewards_available: 1 })
+      .eq("id", referredCardId);
+
+    await supabase.from("transactions").insert([
+      {
+        business_id: businessId,
+        customer_id: referrer.customer_id,
+        card_id: referrer.id,
+        type: "reward_earned",
+        value: 1,
+        note: "Parrainage : un ami a rejoint",
+      },
+      {
+        business_id: businessId,
+        customer_id: referredCustomerId,
+        card_id: referredCardId,
+        type: "reward_earned",
+        value: 1,
+        note: "Parrainage : récompense de bienvenue",
+      },
+    ]);
+
+    await notifyWalletPassUpdate(referrer.id);
+    await notifyWalletPassUpdate(referredCardId);
+  } catch (err) {
+    console.error("[referral]", err);
+  }
+}
 
 export type LookupState = {
   error?: string;
@@ -123,6 +196,12 @@ export async function createCustomerCardAction(
     note: "Carte créée depuis le QR code",
   });
 
+  // Parrainage (si lien ?ref=<carte du parrain>). Best-effort.
+  const ref = formData.get("ref");
+  if (typeof ref === "string" && ref.trim()) {
+    await applyReferral(supabase, business.id, ref.trim(), card.id, customer.id);
+  }
+
   return { cardId: card.id };
 }
 
@@ -185,6 +264,155 @@ export async function findCustomerCardAction(
   }
 
   return { cardId };
+}
+
+export type PassageState = {
+  error?: string;
+  ok?: boolean;
+  cardId?: string;
+  businessName?: string;
+  current?: number;
+  threshold?: number;
+  added?: number;
+  rewardEarned?: boolean;
+  isPoints?: boolean;
+};
+
+// Plancher anti-abus pour le self-service (non supervisé) : même si le commerce
+// règle un cooldown plus court pour le scan staff, on impose au moins ce délai
+// entre deux validations en libre-service.
+const SELF_PASSAGE_MIN_COOLDOWN_MIN = 60;
+
+// Validation de passage en self-service via le QR fixe du comptoir.
+// Le client s'identifie (téléphone/email), on crédite +1 tampon (ou le montant
+// en points), avec garde-fous : rate-limit IP, cooldown plancher, et la
+// transaction est tracée comme « QR comptoir » pour l'historique commerçant.
+export async function validatePassageAction(
+  _: PassageState,
+  formData: FormData,
+): Promise<PassageState> {
+  if (!(await allowAction("passage", 8, 600))) {
+    return { error: "Trop de tentatives. Patientez quelques minutes." };
+  }
+
+  const parsed = passageSchema.safeParse({
+    business_slug: formData.get("business_slug"),
+    contact: formData.get("contact"),
+    amount: formData.get("amount"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Formulaire invalide" };
+  }
+
+  const supabase = createAdminClient();
+  const { business_slug, contact } = parsed.data;
+
+  const { data: business } = await supabase
+    .from("businesses")
+    .select(
+      "id,name,is_active,loyalty_type,stamps_required,points_required,stamp_cooldown_minutes",
+    )
+    .eq("slug", business_slug)
+    .maybeSingle();
+
+  if (!business || !business.is_active) {
+    return { error: "Commerce introuvable ou inactif." };
+  }
+
+  let query = supabase
+    .from("customers")
+    .select("id, loyalty_cards(id,status,current_stamps,total_stamps,rewards_available)")
+    .eq("business_id", business.id)
+    .limit(1);
+
+  if (contact.includes("@")) {
+    query = query.ilike("email", contact.replace(/[%_\\]/g, "\\$&"));
+  } else {
+    query = query.eq("phone", normalizePhone(contact) ?? contact);
+  }
+
+  const { data: existing } = await query.maybeSingle();
+  const card = existing?.loyalty_cards?.find((c) => c.status === "active");
+
+  if (!existing || !card) {
+    return {
+      error: "Aucune carte active trouvée avec ce contact. Créez d'abord votre carte.",
+    };
+  }
+
+  // Cooldown : plancher self-service appliqué.
+  const cooldown = Math.max(
+    business.stamp_cooldown_minutes ?? 0,
+    SELF_PASSAGE_MIN_COOLDOWN_MIN,
+  );
+  const since = new Date(Date.now() - cooldown * 60_000).toISOString();
+  const { data: recent } = await supabase
+    .from("transactions")
+    .select("id")
+    .eq("card_id", card.id)
+    .eq("type", "stamp_added")
+    .gte("created_at", since)
+    .limit(1);
+  if (recent && recent.length > 0) {
+    return { error: "Passage déjà validé récemment. Réessayez plus tard." };
+  }
+
+  const isPoints = business.loyalty_type === "points";
+  const threshold = Math.max(
+    1,
+    isPoints ? business.points_required ?? 100 : business.stamps_required ?? 10,
+  );
+  const rawAmount = Number(parsed.data.amount);
+  const amount = isPoints
+    ? Math.min(100_000, Math.max(1, Math.floor(Number.isFinite(rawAmount) ? rawAmount : 1)))
+    : 1;
+
+  const totalNow = card.current_stamps + amount;
+  const rewardsEarned = Math.floor(totalNow / threshold);
+  const current_stamps = totalNow % threshold;
+  const rewards_available = card.rewards_available + rewardsEarned;
+  const total_stamps = card.total_stamps + amount;
+
+  await supabase
+    .from("loyalty_cards")
+    .update({ current_stamps, total_stamps, rewards_available })
+    .eq("id", card.id);
+
+  await supabase.from("transactions").insert([
+    {
+      business_id: business.id,
+      customer_id: existing.id,
+      card_id: card.id,
+      type: "stamp_added",
+      value: amount,
+      note: "Passage validé au comptoir (QR)",
+    },
+    ...(rewardsEarned > 0
+      ? [
+          {
+            business_id: business.id,
+            customer_id: existing.id,
+            card_id: card.id,
+            type: "reward_earned" as const,
+            value: rewardsEarned,
+            note: "Récompense débloquée (QR comptoir)",
+          },
+        ]
+      : []),
+  ]);
+
+  await notifyWalletPassUpdate(card.id);
+
+  return {
+    ok: true,
+    cardId: card.id,
+    businessName: business.name,
+    current: current_stamps,
+    threshold,
+    added: amount,
+    rewardEarned: rewardsEarned > 0,
+    isPoints,
+  };
 }
 
 export type BirthdayState = {
