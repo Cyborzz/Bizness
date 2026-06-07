@@ -73,8 +73,9 @@ RESEND_FROM=hello@fidelise-moi.fr
 
 1. Créer un projet Supabase
 2. Copier les variables API dans `.env.local`
-3. Exécuter `supabase/migrations/001_initial_schema.sql` (schéma de base)
-4. Exécuter `supabase/migrations/002_push_geo_offers.sql` (geo, push, offres, RGPD)
+3. Exécuter **dans l'ordre** toutes les migrations de `supabase/migrations/`
+   (de `001_initial_schema.sql` à la dernière — geo/push/offres/RGPD, points,
+   parrainage, relance SMS `009`, intégration caisse `010`)
 5. Exécuter `supabase/seed.sql` pour créer Snack Démo
 6. Créer un utilisateur Auth (Dashboard > Authentication > Add user)
 7. Exécuter `supabase/bootstrap-super-admin.sql` (UUID + email du super admin)

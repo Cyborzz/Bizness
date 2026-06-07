@@ -12,6 +12,7 @@ const successMessages: Record<string, string> = {
   "offer-created": "Offre enregistrée en brouillon.",
   "offer-sent": "Offre envoyée aux abonnés.",
   "offer-deleted": "Offre supprimée.",
+  "key-revoked": "Clé API révoquée.",
   "staff-invited": "Invitation envoyée.",
   "member-removed": "Membre retiré.",
   "password-reset-sent": "Email de réinitialisation envoyé.",
