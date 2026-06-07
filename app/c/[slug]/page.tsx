@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { Gift, ShieldCheck, Stamp } from "lucide-react";
 import { CustomerSignupForm } from "@/components/loyalty/CustomerSignupForm";
 import { FindCardForm } from "@/components/loyalty/FindCardForm";
+import { GoogleSignupButton } from "@/components/loyalty/GoogleSignupButton";
+import { isGoogleOAuthConfigured } from "@/lib/oauth/google";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -30,10 +32,11 @@ export default async function BusinessSignupPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ ref?: string }>;
+  searchParams: Promise<{ ref?: string; error?: string }>;
 }) {
   const { slug } = await params;
-  const { ref } = await searchParams;
+  const { ref, error } = await searchParams;
+  const googleEnabled = isGoogleOAuthConfigured();
   const supabase = createAdminClient();
   const { data: business } = await supabase
     .from("businesses")
@@ -127,6 +130,16 @@ export default async function BusinessSignupPage({
           <div className="flex items-center gap-2 rounded-2xl border border-mint/30 bg-mint-soft px-4 py-3 text-sm font-bold text-mint">
             🎁 Vous avez été parrainé&nbsp;: une récompense vous attend dès l&apos;inscription.
           </div>
+        ) : null}
+
+        {error === "google" ? (
+          <div className="flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+            La connexion Google a échoué. Réessayez ou créez votre carte ci-dessous.
+          </div>
+        ) : null}
+
+        {googleEnabled ? (
+          <GoogleSignupButton businessSlug={business.slug} referralCode={ref ?? null} />
         ) : null}
 
         <CustomerSignupForm businessSlug={business.slug} referralCode={ref ?? null} />

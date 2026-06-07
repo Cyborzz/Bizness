@@ -45,6 +45,13 @@ BREVO_API_KEY=
 # Expéditeur alphanumérique par défaut (3-11 car.). Surchargé par commerce.
 SMS_SENDER=Fidelise
 
+# Connexion « un clic » Google pour les CLIENTS (optionnel)
+# Si vide, le bouton « Continuer avec Google » est masqué (le formulaire reste).
+# Console Google Cloud > API & Services > Identifiants > ID client OAuth (Web).
+# URI de redirection autorisée à déclarer : <APP_URL>/auth/google/callback
+GOOGLE_OAUTH_CLIENT_ID=
+GOOGLE_OAUTH_CLIENT_SECRET=
+
 # Google Wallet (optionnel — voir docs/ROADMAP_WALLET.md)
 # Si vide, le bouton « Ajouter à Google Wallet » est masqué (aucun crash).
 GOOGLE_WALLET_ISSUER_ID=

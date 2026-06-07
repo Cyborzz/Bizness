@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { allowAction } from "@/lib/security/rate-limit";
 import { normalizePhone } from "@/lib/utils/format";
+import { getOrCreateCard } from "@/lib/loyalty/signup";
 import {
   BIRTHDAY_NOTE,
   isBirthdayDue,
@@ -20,77 +21,6 @@ export type SignupState = {
   error?: string;
   cardId?: string;
 };
-
-// Applique un parrainage : +1 récompense pour le parrain ET le filleul.
-// Best-effort (ne lève jamais) et « fail-closed » : la table `referrals` sert de
-// garde (dédoublonnage + FK). Si la migration n'est pas appliquée, l'insert
-// échoue et aucune récompense n'est accordée — l'inscription reste intacte.
-async function applyReferral(
-  supabase: ReturnType<typeof createAdminClient>,
-  businessId: string,
-  referrerCardId: string,
-  referredCardId: string,
-  referredCustomerId: string,
-) {
-  try {
-    if (!referrerCardId || referrerCardId === referredCardId) return;
-
-    const { data: referrer } = await supabase
-      .from("loyalty_cards")
-      .select("id,business_id,status,customer_id,rewards_available")
-      .eq("id", referrerCardId)
-      .maybeSingle();
-    if (
-      !referrer ||
-      referrer.status !== "active" ||
-      referrer.business_id !== businessId
-    ) {
-      return;
-    }
-
-    // Garde-fou : enregistre le parrainage AVANT de créditer. unique(referred_card_id)
-    // + FK empêchent doublon / carte invalide. Échec => on n'accorde rien.
-    const { error: refErr } = await supabase.from("referrals").insert({
-      business_id: businessId,
-      referrer_card_id: referrer.id,
-      referred_card_id: referredCardId,
-    });
-    if (refErr) return;
-
-    await supabase
-      .from("loyalty_cards")
-      .update({ rewards_available: referrer.rewards_available + 1 })
-      .eq("id", referrer.id);
-    await supabase
-      .from("loyalty_cards")
-      .update({ rewards_available: 1 })
-      .eq("id", referredCardId);
-
-    await supabase.from("transactions").insert([
-      {
-        business_id: businessId,
-        customer_id: referrer.customer_id,
-        card_id: referrer.id,
-        type: "reward_earned",
-        value: 1,
-        note: "Parrainage : un ami a rejoint",
-      },
-      {
-        business_id: businessId,
-        customer_id: referredCustomerId,
-        card_id: referredCardId,
-        type: "reward_earned",
-        value: 1,
-        note: "Parrainage : récompense de bienvenue",
-      },
-    ]);
-
-    await notifyWalletPassUpdate(referrer.id);
-    await notifyWalletPassUpdate(referredCardId);
-  } catch (err) {
-    console.error("[referral]", err);
-  }
-}
 
 export type LookupState = {
   error?: string;
@@ -124,8 +54,6 @@ export async function createCustomerCardAction(
 
   const supabase = createAdminClient();
   const { business_slug, ...customerInput } = parsed.data;
-  // Canonicalise le téléphone pour la déduplication et la recherche ultérieure.
-  customerInput.phone = normalizePhone(customerInput.phone);
 
   const { data: business, error: businessError } = await supabase
     .from("businesses")
@@ -137,72 +65,19 @@ export async function createCustomerCardAction(
     return { error: "Commerce introuvable ou inactif." };
   }
 
-  let existingQuery = supabase
-    .from("customers")
-    .select("id, loyalty_cards(id,status)")
-    .eq("business_id", business.id)
-    .limit(1);
-
-  if (customerInput.phone) {
-    existingQuery = existingQuery.eq("phone", customerInput.phone);
-  } else if (customerInput.email) {
-    existingQuery = existingQuery.eq("email", customerInput.email);
-  }
-
-  const { data: existing } = await existingQuery.maybeSingle();
-  const existingCard = existing?.loyalty_cards?.find((card) => card.status === "active");
-
-  if (existingCard) {
-    return { cardId: existingCard.id };
-  }
-
-  const { data: customer, error: customerError } = await supabase
-    .from("customers")
-    .insert({
-      ...customerInput,
-      business_id: business.id,
-    })
-    .select("id")
-    .single();
-
-  if (customerError || !customer) {
-    if (customerError?.code === "23505") {
-      return {
-        error: "Un compte existe déjà avec ce téléphone ou cet email pour ce commerce.",
-      };
-    }
-    return { error: "Impossible de créer le client." };
-  }
-
-  const { data: card, error: cardError } = await supabase
-    .from("loyalty_cards")
-    .insert({
-      business_id: business.id,
-      customer_id: customer.id,
-    })
-    .select("id")
-    .single();
-
-  if (cardError || !card) {
-    return { error: "Impossible de créer la carte fidélité." };
-  }
-
-  await supabase.from("transactions").insert({
-    business_id: business.id,
-    customer_id: customer.id,
-    card_id: card.id,
-    type: "card_created",
-    value: 0,
-    note: "Carte créée depuis le QR code",
-  });
-
-  // Parrainage (si lien ?ref=<carte du parrain>). Best-effort.
+  // Création/déduplication + parrainage centralisés (cf. lib/loyalty/signup).
   const ref = formData.get("ref");
-  if (typeof ref === "string" && ref.trim()) {
-    await applyReferral(supabase, business.id, ref.trim(), card.id, customer.id);
-  }
-
-  return { cardId: card.id };
+  return getOrCreateCard({
+    businessId: business.id,
+    first_name: customerInput.first_name,
+    last_name: customerInput.last_name,
+    phone: customerInput.phone,
+    email: customerInput.email,
+    birthdate: customerInput.birthdate,
+    consent_loyalty: customerInput.consent_loyalty,
+    consent_marketing: customerInput.consent_marketing,
+    ref: typeof ref === "string" ? ref : null,
+  });
 }
 
 export async function findCustomerCardAction(
