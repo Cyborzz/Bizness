@@ -74,6 +74,14 @@ export function OffersList({ offers }: { offers: OfferRow[] }) {
                     }}
                   >
                     <input type="hidden" name="offerId" value={offer.id} />
+                    <label className="mb-2 flex items-center gap-2 text-xs font-semibold text-muted">
+                      <input
+                        name="sms"
+                        type="checkbox"
+                        className="h-3.5 w-3.5 accent-primary"
+                      />
+                      Aussi par SMS
+                    </label>
                     <Button type="submit" size="sm" variant="mint" className="w-full">
                       <Send aria-hidden className="h-4 w-4" />
                       Envoyer

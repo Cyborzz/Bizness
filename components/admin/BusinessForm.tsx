@@ -285,6 +285,69 @@ export function BusinessForm({ business }: { business?: Business }) {
         </label>
       </fieldset>
 
+      <fieldset className="space-y-4">
+        <legend className="text-sm font-black uppercase tracking-normal text-primary">
+          Relance &amp; marketing
+        </legend>
+        <label className="flex items-start gap-3 rounded-lg border border-border bg-surface-muted p-3 text-sm font-semibold text-ink">
+          <input
+            name="reengage_inactive_enabled"
+            type="checkbox"
+            defaultChecked={business?.reengage_inactive_enabled ?? false}
+            className="mt-0.5 h-4 w-4 accent-primary"
+          />
+          <span>
+            📣 Relancer automatiquement les clients inactifs
+            <span className="mt-0.5 block text-xs font-normal text-muted">
+              Chaque jour, les clients consentants au marketing sans passage
+              depuis le délai ci-dessous reçoivent une relance (push + SMS si
+              configurés). Maximum une relance par client tous les 30 jours.
+            </span>
+          </span>
+        </label>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="reengage_inactive_days">
+              Inactivité avant relance (jours)
+            </Label>
+            <Input
+              id="reengage_inactive_days"
+              name="reengage_inactive_days"
+              type="number"
+              min={14}
+              max={365}
+              defaultValue={business?.reengage_inactive_days ?? 45}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="sms_sender">Expéditeur SMS (3 à 11 caractères)</Label>
+            <Input
+              id="sms_sender"
+              name="sms_sender"
+              maxLength={11}
+              defaultValue={business?.sms_sender ?? ""}
+              placeholder="ex. MonSnack"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="reengage_offer_label">
+            Offre de relance (incluse dans le message)
+          </Label>
+          <Input
+            id="reengage_offer_label"
+            name="reengage_offer_label"
+            maxLength={140}
+            defaultValue={business?.reengage_offer_label ?? ""}
+            placeholder="ex. -15% sur votre prochaine visite"
+          />
+          <p className="text-xs text-muted">
+            Laissé vide, un message générique de relance est envoyé. Le SMS
+            nécessite la clé API Brevo côté serveur (sinon seul le push part).
+          </p>
+        </div>
+      </fieldset>
+
       <label className="flex items-center gap-3 rounded-lg border border-border bg-surface-muted p-3 text-sm font-semibold text-ink">
         <input
           name="is_active"

@@ -89,6 +89,10 @@ export async function saveBusinessAction(_: BusinessActionState, formData: FormD
     points_required: formData.get("points_required") || 100,
     stamp_cooldown_minutes: formData.get("stamp_cooldown_minutes") || 0,
     birthday_reward_enabled: formData.get("birthday_reward_enabled") === "on",
+    reengage_inactive_enabled: formData.get("reengage_inactive_enabled") === "on",
+    reengage_inactive_days: formData.get("reengage_inactive_days") || 45,
+    reengage_offer_label: formData.get("reengage_offer_label"),
+    sms_sender: formData.get("sms_sender"),
     reward_label: formData.get("reward_label") || "1 récompense offerte",
     is_active: formData.get("is_active") === "on",
   });

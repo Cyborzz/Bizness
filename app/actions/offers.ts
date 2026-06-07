@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/queries";
 import { canAccessBusiness } from "@/lib/permissions";
 import { sendPushBatch } from "@/lib/push/send";
+import { isSmsConfigured } from "@/lib/sms/env";
+import { sendSmsBatch, type SmsRecipient } from "@/lib/sms/send";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { offerSchema } from "@/lib/validators/push";
 
@@ -65,9 +67,11 @@ export async function sendOfferAction(formData: FormData) {
   const { profile } = await requireAdmin();
   const supabase = createAdminClient();
 
+  const wantsSms = formData.get("sms") === "on";
+
   const { data: offer } = await supabase
     .from("offers")
-    .select("*, businesses(name)")
+    .select("*, businesses(name, sms_sender)")
     .eq("id", offerId)
     .maybeSingle();
 
@@ -107,17 +111,41 @@ export async function sendOfferAction(formData: FormData) {
     }
   }
 
+  // Diffusion SMS optionnelle aux clients consentant au marketing (avec tel).
+  let smsCount = 0;
+  if (wantsSms && isSmsConfigured()) {
+    const { data: customers } = await supabase
+      .from("customers")
+      .select("id, phone")
+      .eq("business_id", offer.business_id)
+      .eq("consent_marketing", true)
+      .not("phone", "is", null);
+
+    const recipients: SmsRecipient[] = (customers ?? [])
+      .filter((c): c is { id: string; phone: string } => Boolean(c.phone))
+      .map((c) => ({ id: c.id, phone: c.phone }));
+
+    if (recipients.length > 0) {
+      const content = `${offer.title} : ${offer.body}`.slice(0, 300);
+      const sender = offer.businesses?.sms_sender ?? null;
+      const smsResult = await sendSmsBatch(recipients, content, sender);
+      smsCount = smsResult.delivered;
+    }
+  }
+
   await supabase
     .from("offers")
     .update({
       status: "sent",
       sent_at: new Date().toISOString(),
-      recipient_count: recipientCount,
+      recipient_count: recipientCount + smsCount,
     })
     .eq("id", offer.id);
 
   revalidatePath("/admin/offers");
-  redirect(`/admin/offers?success=offer-sent&count=${recipientCount}`);
+  redirect(
+    `/admin/offers?success=offer-sent&count=${recipientCount}&sms=${smsCount}`,
+  );
 }
 
 export async function deleteOfferAction(formData: FormData) {

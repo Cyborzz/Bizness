@@ -1,8 +1,10 @@
-import { Mail, ShieldCheck, Sparkles } from "lucide-react";
+import { Bell, Mail, MessageSquare, ShieldCheck, Sparkles } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { requireAdmin, type AdminProfile } from "@/lib/auth/queries";
 import { requireFullPortalAccess } from "@/lib/permissions";
+import { getVapidPublicKey } from "@/lib/push/env";
+import { isSmsConfigured } from "@/lib/sms/env";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -17,9 +19,9 @@ const roleLabels: Record<AdminProfile["role"], { label: string; tone: BadgeTone 
 
 const roadmap = [
   "Stripe Checkout + abonnement",
-  "Apple Wallet & Google Wallet",
-  "Notifications email/SMS/WhatsApp",
-  "Campagnes marketing",
+  "Apple Wallet (pass natif iOS)",
+  "Connexion aux caisses (SumUp, Square…)",
+  "Notifications WhatsApp",
   "Statistiques avancées",
 ];
 
@@ -27,6 +29,28 @@ export default async function SettingsPage() {
   const { profile } = await requireAdmin();
   requireFullPortalAccess(profile);
   const role = roleLabels[profile.role];
+
+  const pushConfigured = Boolean(getVapidPublicKey());
+  const smsConfigured = isSmsConfigured();
+  const channels: {
+    label: string;
+    icon: typeof Bell;
+    configured: boolean;
+    hint: string;
+  }[] = [
+    {
+      label: "Notifications Push",
+      icon: Bell,
+      configured: pushConfigured,
+      hint: "Clés VAPID (NEXT_PUBLIC_VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY).",
+    },
+    {
+      label: "SMS (Brevo)",
+      icon: MessageSquare,
+      configured: smsConfigured,
+      hint: "Clé API Brevo (BREVO_API_KEY) + expéditeur SMS_SENDER.",
+    },
+  ];
 
   return (
     <AdminShell profile={profile}>
@@ -57,6 +81,42 @@ export default async function SettingsPage() {
               <Badge tone={role.tone}>{role.label}</Badge>
             </div>
           </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-black text-ink">Canaux de relance</h2>
+          <p className="mt-1 text-sm text-muted">
+            État de configuration côté serveur. La relance automatique des
+            clients inactifs et les campagnes utilisent ces canaux.
+          </p>
+          <div className="mt-4 grid gap-3">
+            {channels.map((channel) => {
+              const Icon = channel.icon;
+              return (
+                <div
+                  key={channel.label}
+                  className="flex items-start justify-between gap-3 rounded-lg bg-surface-muted p-3"
+                >
+                  <span className="flex items-start gap-2 text-sm">
+                    <Icon aria-hidden className="mt-0.5 h-4 w-4 text-muted" />
+                    <span>
+                      <strong className="block font-semibold text-ink">
+                        {channel.label}
+                      </strong>
+                      <span className="text-xs text-muted">{channel.hint}</span>
+                    </span>
+                  </span>
+                  <Badge tone={channel.configured ? "mint" : "neutral"}>
+                    {channel.configured ? "Actif" : "Non configuré"}
+                  </Badge>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs text-muted">
+            La relance inactifs s&apos;active par commerce dans{" "}
+            <strong>Commerces → Modifier → Relance &amp; marketing</strong>.
+          </p>
         </div>
 
         <div className="rounded-2xl border border-border bg-ink p-5 text-white shadow-xl">

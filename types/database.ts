@@ -45,6 +45,10 @@ export type Database = {
           points_required: number;
           stamp_cooldown_minutes: number;
           birthday_reward_enabled: boolean;
+          reengage_inactive_enabled: boolean;
+          reengage_inactive_days: number;
+          reengage_offer_label: string | null;
+          sms_sender: string | null;
           reward_label: string;
           is_active: boolean;
           created_at: string;
@@ -70,6 +74,10 @@ export type Database = {
           points_required?: number;
           stamp_cooldown_minutes?: number;
           birthday_reward_enabled?: boolean;
+          reengage_inactive_enabled?: boolean;
+          reengage_inactive_days?: number;
+          reengage_offer_label?: string | null;
+          sms_sender?: string | null;
           reward_label?: string;
           is_active?: boolean;
           created_at?: string;

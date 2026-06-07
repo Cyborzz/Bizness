@@ -38,6 +38,13 @@ NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
 VAPID_SUBJECT=mailto:hello@fidelise-moi.fr
 
+# SMS (optionnel — provider Brevo, RGPD/France)
+# Si vide, l'envoi SMS est un no-op propre (la relance inactifs reste en push seul).
+# Générer la clé : Brevo > SMTP & API > Clés API.
+BREVO_API_KEY=
+# Expéditeur alphanumérique par défaut (3-11 car.). Surchargé par commerce.
+SMS_SENDER=Fidelise
+
 # Google Wallet (optionnel — voir docs/ROADMAP_WALLET.md)
 # Si vide, le bouton « Ajouter à Google Wallet » est masqué (aucun crash).
 GOOGLE_WALLET_ISSUER_ID=
