@@ -1,5 +1,6 @@
 import {
   Activity,
+  BellRing,
   Building2,
   CreditCard,
   Download,
@@ -11,6 +12,7 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
+import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatCard } from "@/components/admin/StatCard";
 import { StatsChart } from "@/components/admin/StatsChart";
@@ -129,6 +131,7 @@ export default async function DashboardPage() {
   const activeCustomers = new Set((activeEvents ?? []).map((row) => row.customer_id)).size;
   const activeRate = customers > 0 ? Math.round((activeCustomers / customers) * 100) : 0;
   const visitsPerActive = activeCustomers > 0 ? visits30 / activeCustomers : 0;
+  const inactiveCustomers = Math.max(0, customers - activeCustomers);
   const earned = rewardsEarned ?? 0;
   const redeemed = rewardsRedeemed ?? 0;
   const redemptionRate = earned > 0 ? Math.round((redeemed / earned) * 100) : 0;
@@ -195,6 +198,23 @@ export default async function DashboardPage() {
             </LinkButton>
           </div>
         </div>
+        {inactiveCustomers > 0 ? (
+          <Link
+            href="/admin/businesses"
+            className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 transition hover:bg-amber-100"
+          >
+            <BellRing aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+            <span>
+              <strong className="font-black">{inactiveCustomers} client·s inactif·s</strong>{" "}
+              (aucun passage depuis 30 jours).{" "}
+              <span className="font-semibold underline">
+                Activez la relance automatique
+              </span>{" "}
+              dans les réglages du commerce pour les faire revenir.
+            </span>
+          </Link>
+        ) : null}
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <StatCard
             title="Commerces"

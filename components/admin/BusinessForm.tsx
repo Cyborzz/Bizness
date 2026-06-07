@@ -179,6 +179,20 @@ export function BusinessForm({ business }: { business?: Business }) {
           <Label htmlFor="address">Adresse</Label>
           <Textarea id="address" name="address" defaultValue={business?.address ?? ""} />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="google_review_url">Lien d&apos;avis Google (optionnel)</Label>
+          <Input
+            id="google_review_url"
+            name="google_review_url"
+            type="url"
+            defaultValue={business?.google_review_url ?? ""}
+            placeholder="https://g.page/r/…/review"
+          />
+          <p className="text-xs text-muted">
+            Proposé au client quand il débloque une récompense, pour booster vos
+            avis Google. Récupérez-le dans votre fiche Google Business.
+          </p>
+        </div>
         <LocationPicker
           defaultLatitude={business?.latitude ?? null}
           defaultLongitude={business?.longitude ?? null}

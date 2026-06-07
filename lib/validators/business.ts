@@ -42,6 +42,12 @@ export const businessSchema = z.object({
   phone: optionalString,
   email: optionalEmail,
   business_type: optionalString,
+  google_review_url: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => value || null)
+    .pipe(z.string().url("Lien d'avis Google invalide").nullable()),
   loyalty_type: z.enum(["stamps", "points"]).default("stamps"),
   stamps_required: z.coerce.number().int().min(1).max(50),
   points_required: z.coerce.number().int().min(1).max(1_000_000).default(100),

@@ -2,7 +2,9 @@ import { AlertCircle, HelpCircle, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LoyaltyCardPreview } from "@/components/loyalty/LoyaltyCardPreview";
+import { TierBadge } from "@/components/loyalty/TierBadge";
 import { TransactionList } from "@/components/loyalty/TransactionList";
+import { GoogleReviewCta } from "@/components/customer/GoogleReviewCta";
 import { PushSubscribeButton } from "@/components/customer/PushSubscribeButton";
 import { ReferralShare } from "@/components/customer/ReferralShare";
 import { SaveCardActions } from "@/components/customer/SaveCardActions";
@@ -41,7 +43,7 @@ export default async function CustomerCardPage({
   const { data: card } = await supabase
     .from("loyalty_cards")
     .select(
-      "*, businesses(name,slug,logo_url,primary_color,secondary_color,card_style,welcome_message,reward_label,stamps_required,points_required,loyalty_type,is_active,birthday_reward_enabled), customers(birthdate)",
+      "*, businesses(name,slug,logo_url,primary_color,secondary_color,card_style,welcome_message,reward_label,stamps_required,points_required,loyalty_type,is_active,birthday_reward_enabled,google_review_url), customers(birthdate)",
     )
     .eq("id", cardId)
     .maybeSingle();
@@ -108,6 +110,12 @@ export default async function CustomerCardPage({
         ) : null}
 
         <LoyaltyCardPreview business={business} card={card} />
+
+        {inactive ? null : <TierBadge total={card.total_stamps ?? 0} />}
+
+        {!inactive && business.google_review_url && card.rewards_available > 0 ? (
+          <GoogleReviewCta url={business.google_review_url} businessName={business.name} />
+        ) : null}
 
         {birthdayDue ? <BirthdayReward cardId={card.id} /> : null}
 

@@ -40,6 +40,7 @@ export type Database = {
           phone: string | null;
           email: string | null;
           business_type: string | null;
+          google_review_url: string | null;
           loyalty_type: "stamps" | "points";
           stamps_required: number;
           points_required: number;
@@ -69,6 +70,7 @@ export type Database = {
           phone?: string | null;
           email?: string | null;
           business_type?: string | null;
+          google_review_url?: string | null;
           loyalty_type?: "stamps" | "points";
           stamps_required?: number;
           points_required?: number;

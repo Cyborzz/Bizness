@@ -17,6 +17,7 @@ import { MarketProofSection } from "@/components/public/MarketProofSection";
 import { PricingCards } from "@/components/public/PricingCards";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicNav } from "@/components/public/PublicNav";
+import { RoiCalculator } from "@/components/public/RoiCalculator";
 import { Testimonials } from "@/components/public/Testimonials";
 import { TrustStrip } from "@/components/public/TrustStrip";
 import { LinkButton } from "@/components/ui/button";
@@ -90,6 +91,8 @@ export default function HomePage() {
         </section>
 
         <HowItWorks />
+
+        <RoiCalculator />
 
         <MarketProofSection />
 

@@ -84,6 +84,7 @@ export async function saveBusinessAction(_: BusinessActionState, formData: FormD
     phone: formData.get("phone"),
     email: formData.get("email"),
     business_type: formData.get("business_type"),
+    google_review_url: formData.get("google_review_url"),
     loyalty_type: formData.get("loyalty_type") || "stamps",
     stamps_required: formData.get("stamps_required") || 10,
     points_required: formData.get("points_required") || 100,
