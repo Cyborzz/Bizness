@@ -7,6 +7,7 @@ import { ToastBanner } from "@/components/ui/toast-banner";
 import { requireAdmin } from "@/lib/auth/queries";
 import { getBusinessFilter, requireFullPortalAccess } from "@/lib/permissions";
 import { getServerVapid } from "@/lib/push/env";
+import { isEmailConfigured } from "@/lib/email/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,7 @@ export default async function OffersPage({
   const businessFilter = getBusinessFilter(profile);
   const supabase = createAdminClient();
   const vapidConfigured = Boolean(getServerVapid());
+  const emailConfigured = isEmailConfigured();
 
   let businessesQuery = supabase.from("businesses").select("id,name").order("name");
   if (businessFilter) businessesQuery = businessesQuery.eq("id", businessFilter);
@@ -123,7 +125,7 @@ export default async function OffersPage({
                 <Badge tone="neutral">{offers?.length ?? 0}</Badge>
               </div>
               <div className="mt-4">
-                <OffersList offers={offers ?? []} />
+                <OffersList offers={offers ?? []} emailConfigured={emailConfigured} />
               </div>
             </div>
           </div>
@@ -131,7 +133,7 @@ export default async function OffersPage({
           <div>
             <h2 className="text-lg font-black text-ink">Historique</h2>
             <div className="mt-4">
-              <OffersList offers={offers ?? []} />
+              <OffersList offers={offers ?? []} emailConfigured={emailConfigured} />
             </div>
           </div>
         )}

@@ -2,7 +2,6 @@ import Image from "next/image";
 import { Gift, RefreshCcw, ShieldCheck, Sparkles } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { calculateRemainingStamps } from "@/lib/utils/format";
-import { getLoyaltyTier } from "@/lib/loyalty/milestones";
 import { StampProgress } from "./StampProgress";
 
 type LoyaltyCardPreviewProps = {
@@ -51,7 +50,6 @@ export function LoyaltyCardPreview({ business, card }: LoyaltyCardPreviewProps) 
   const unitPlural = isPoints ? "points" : "tampons";
   const remaining = calculateRemainingStamps(card.current_stamps, threshold);
   const hasReward = card.rewards_available > 0;
-  const tier = getLoyaltyTier(card.total_stamps);
   const progress = (card.current_stamps / Math.max(threshold, 1)) * 100;
   const headerBg = buildHeaderBackground(
     business.primary_color,
@@ -104,11 +102,6 @@ export function LoyaltyCardPreview({ business, card }: LoyaltyCardPreviewProps) 
             </p>
           </div>
           <div className="flex flex-col items-end gap-1.5">
-            {tier ? (
-              <div className="rounded-full bg-white/20 px-3 py-1 text-xs font-black ring-1 ring-white/25">
-                {tier.emoji} {tier.label}
-              </div>
-            ) : null}
             <div className="rounded-full bg-white/15 px-3 py-1 text-xs font-black uppercase">
               {card.status}
             </div>

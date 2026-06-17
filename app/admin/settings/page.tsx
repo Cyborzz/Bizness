@@ -5,6 +5,7 @@ import { requireAdmin, type AdminProfile } from "@/lib/auth/queries";
 import { requireFullPortalAccess } from "@/lib/permissions";
 import { getVapidPublicKey } from "@/lib/push/env";
 import { isSmsConfigured } from "@/lib/sms/env";
+import { isEmailConfigured } from "@/lib/email/env";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -20,7 +21,6 @@ const roleLabels: Record<AdminProfile["role"], { label: string; tone: BadgeTone 
 const roadmap = [
   "Stripe Checkout + abonnement",
   "Apple Wallet (pass natif iOS)",
-  "Connexion aux caisses (SumUp, Square…)",
   "Notifications WhatsApp",
   "Statistiques avancées",
 ];
@@ -32,6 +32,7 @@ export default async function SettingsPage() {
 
   const pushConfigured = Boolean(getVapidPublicKey());
   const smsConfigured = isSmsConfigured();
+  const emailConfigured = isEmailConfigured();
   const channels: {
     label: string;
     icon: typeof Bell;
@@ -50,6 +51,12 @@ export default async function SettingsPage() {
       configured: smsConfigured,
       hint: "Clé API Brevo (BREVO_API_KEY) + expéditeur SMS_SENDER.",
     },
+    {
+      label: "Email (Brevo)",
+      icon: Mail,
+      configured: emailConfigured,
+      hint: "Clé API Brevo (BREVO_API_KEY) + expéditeur vérifié BREVO_EMAIL_SENDER.",
+    },
   ];
 
   return (
@@ -59,7 +66,8 @@ export default async function SettingsPage() {
           <p className="text-xs font-black uppercase tracking-normal text-primary">Configuration</p>
           <h1 className="mt-1 text-3xl font-black tracking-tight text-ink">Réglages</h1>
           <p className="mt-1 text-muted">
-            Base V1. Stripe, Wallet et notifications restent prévus pour la V2.
+            Push, SMS, email, Google Wallet et intégration caisse opérationnels.
+            Stripe et Apple Wallet prévus pour plus tard.
           </p>
         </div>
 

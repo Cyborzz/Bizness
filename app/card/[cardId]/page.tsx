@@ -5,6 +5,7 @@ import { LoyaltyCardPreview } from "@/components/loyalty/LoyaltyCardPreview";
 import { TierBadge } from "@/components/loyalty/TierBadge";
 import { TransactionList } from "@/components/loyalty/TransactionList";
 import { GoogleReviewCta } from "@/components/customer/GoogleReviewCta";
+import { NearbyOfferAlert } from "@/components/customer/NearbyOfferAlert";
 import { PushSubscribeButton } from "@/components/customer/PushSubscribeButton";
 import { ReferralShare } from "@/components/customer/ReferralShare";
 import { SaveCardActions } from "@/components/customer/SaveCardActions";
@@ -43,7 +44,7 @@ export default async function CustomerCardPage({
   const { data: card } = await supabase
     .from("loyalty_cards")
     .select(
-      "*, businesses(name,slug,logo_url,primary_color,secondary_color,card_style,welcome_message,reward_label,stamps_required,points_required,loyalty_type,is_active,birthday_reward_enabled,google_review_url), customers(birthdate)",
+      "*, businesses(name,slug,logo_url,primary_color,secondary_color,card_style,welcome_message,reward_label,stamps_required,points_required,loyalty_type,is_active,birthday_reward_enabled,google_review_url,latitude,longitude), customers(birthdate)",
     )
     .eq("id", cardId)
     .maybeSingle();
@@ -78,6 +79,18 @@ export default async function CustomerCardPage({
 
   const inactive = card.status !== "active" || !business.is_active;
 
+  // Dernière offre envoyée du commerce : utilisée par l'alerte de proximité.
+  const { data: latestOffer } = inactive
+    ? { data: null }
+    : await supabase
+        .from("offers")
+        .select("title, body, cta_url")
+        .eq("business_id", card.business_id)
+        .eq("status", "sent")
+        .order("sent_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
   let birthdayDue = false;
   if (
     !inactive &&
@@ -108,6 +121,24 @@ export default async function CustomerCardPage({
             Cette carte est inactive. Rapprochez-vous du commerce.
           </div>
         ) : null}
+
+        {inactive ? null : (
+          <NearbyOfferAlert
+            businessName={business.name}
+            latitude={business.latitude ?? null}
+            longitude={business.longitude ?? null}
+            cardId={card.id}
+            offer={
+              latestOffer
+                ? {
+                    title: latestOffer.title,
+                    body: latestOffer.body,
+                    ctaUrl: latestOffer.cta_url ?? null,
+                  }
+                : null
+            }
+          />
+        )}
 
         <LoyaltyCardPreview business={business} card={card} />
 
@@ -163,6 +194,12 @@ export default async function CustomerCardPage({
           >
             <HelpCircle aria-hidden className="h-3 w-3" />
             Comment ça marche ?
+          </Link>
+          <Link
+            href="/nearby"
+            className="rounded-full bg-white px-3 py-1.5 font-semibold text-ink ring-1 ring-border hover:bg-surface-muted"
+          >
+            Commerces à proximité
           </Link>
           <Link
             href={`/card/${card.id}/supprimer`}

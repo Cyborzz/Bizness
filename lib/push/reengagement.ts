@@ -3,6 +3,8 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSmsConfigured } from "@/lib/sms/env";
 import { sendSmsBatch, type SmsRecipient } from "@/lib/sms/send";
+import { isEmailConfigured } from "@/lib/email/env";
+import { sendEmailBatch, type EmailRecipient } from "@/lib/email/send";
 import { getServerVapid } from "./env";
 import { sendPushBatch, type PushPayload, type StoredSubscription } from "./send";
 
@@ -24,10 +26,12 @@ export type ReengagementSummary = {
   // `configured` = Web Push configuré (rétro-compat de l'ancien résumé).
   configured: boolean;
   smsConfigured: boolean;
+  emailConfigured: boolean;
   birthday: number;
   almostThere: number;
   inactive: number;
   smsSent: number;
+  emailsSent: number;
   expiredCleaned: number;
 };
 
@@ -39,17 +43,20 @@ export async function runReengagement(
 ): Promise<ReengagementSummary> {
   const pushConfigured = Boolean(getServerVapid());
   const smsConfigured = isSmsConfigured();
+  const emailConfigured = isEmailConfigured();
 
   const summary: ReengagementSummary = {
     configured: pushConfigured,
     smsConfigured,
+    emailConfigured,
     birthday: 0,
     almostThere: 0,
     inactive: 0,
     smsSent: 0,
+    emailsSent: 0,
     expiredCleaned: 0,
   };
-  if (!pushConfigured && !smsConfigured) return summary;
+  if (!pushConfigured && !smsConfigured && !emailConfigured) return summary;
 
   const supabase = createAdminClient();
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
@@ -204,7 +211,7 @@ export async function runReengagement(
       // Cartes inactives du commerce, client consentant au marketing.
       const { data: cards } = await supabase
         .from("loyalty_cards")
-        .select("id, customer_id, customers!inner(phone, consent_marketing)")
+        .select("id, customer_id, customers!inner(phone, email, consent_marketing)")
         .eq("business_id", biz.id)
         .eq("status", "active")
         .eq("customers.consent_marketing", true)
@@ -223,6 +230,8 @@ export async function runReengagement(
         : `${biz.name} : ça fait un moment, revenez profiter de votre fidélité ! Votre carte : ${appUrl}/card/`;
 
       const smsRecipients: SmsRecipient[] = [];
+      // L'email pointe vers chaque carte : on associe destinataire ↔ lien carte.
+      const emailRecipients: Array<EmailRecipient & { cardId: string }> = [];
 
       for (const card of cards) {
         const customer = unwrap(card.customers);
@@ -264,6 +273,16 @@ export async function runReengagement(
           reached = true;
         }
 
+        // Email (si configuré et le client a une adresse).
+        if (emailConfigured && customer.email) {
+          emailRecipients.push({
+            id: card.customer_id,
+            email: customer.email,
+            cardId: card.id,
+          });
+          reached = true;
+        }
+
         // Journalise dès qu'au moins un canal a porté la relance (anti-spam).
         if (reached) {
           await supabase.from("notification_log").insert({
@@ -280,6 +299,52 @@ export async function runReengagement(
         const result = await sendSmsBatch(smsRecipients, smsContent, biz.sms_sender);
         summary.smsSent += result.delivered;
       }
+
+      // Emails : un lien cliquable vers la carte de chaque client.
+      const subject = offer
+        ? `${biz.name} : ${offer}`
+        : `${biz.name}, vous nous manquez !`;
+      for (let i = 0; i < emailRecipients.length; i += 10) {
+        const chunk = emailRecipients.slice(i, i + 10);
+        const settled = await Promise.allSettled(
+          chunk.map((r) =>
+            sendEmailBatch([{ id: r.id, email: r.email }], {
+              subject,
+              html: reengagementEmailHtml({
+                businessName: biz.name,
+                offer,
+                cardUrl: `${appUrl}/card/${r.cardId}`,
+              }),
+            }),
+          ),
+        );
+        for (const s of settled) {
+          if (s.status === "fulfilled") summary.emailsSent += s.value.delivered;
+        }
+      }
     }
   }
+}
+
+// Gabarit HTML minimal et sobre pour la relance par email.
+function reengagementEmailHtml(args: {
+  businessName: string;
+  offer?: string;
+  cardUrl: string;
+}): string {
+  const { businessName, offer, cardUrl } = args;
+  const intro = offer
+    ? `<strong>${offer}</strong> — c'est le moment de revenir chez ${businessName}.`
+    : `Ça fait un moment ! Revenez profiter de vos avantages fidélité chez ${businessName}.`;
+  return `<!doctype html><html lang="fr"><body style="margin:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
+  <div style="max-width:480px;margin:0 auto;padding:24px;">
+    <div style="background:#fff;border-radius:16px;padding:28px;text-align:center;">
+      <h1 style="font-size:20px;margin:0 0 12px;">${businessName}, vous nous manquez ! 👋</h1>
+      <p style="font-size:15px;line-height:1.5;margin:0 0 24px;">${intro}</p>
+      <a href="${cardUrl}" style="display:inline-block;background:#111827;color:#fff;text-decoration:none;font-weight:bold;padding:12px 22px;border-radius:999px;">Voir ma carte de fidélité</a>
+    </div>
+    <p style="font-size:12px;color:#6b7280;text-align:center;margin-top:16px;">
+      Vous recevez cet email car vous avez accepté les communications de ${businessName}.
+    </p>
+  </div></body></html>`;
 }

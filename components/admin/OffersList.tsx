@@ -25,7 +25,13 @@ const statusLabels: Record<OfferRow["status"], { label: string; tone: BadgeTone 
   cancelled: { label: "Annulée", tone: "danger" },
 };
 
-export function OffersList({ offers }: { offers: OfferRow[] }) {
+export function OffersList({
+  offers,
+  emailConfigured = false,
+}: {
+  offers: OfferRow[];
+  emailConfigured?: boolean;
+}) {
   if (!offers.length) {
     return (
       <EmptyState title="Aucune offre">
@@ -82,6 +88,16 @@ export function OffersList({ offers }: { offers: OfferRow[] }) {
                       />
                       Aussi par SMS
                     </label>
+                    {emailConfigured ? (
+                      <label className="mb-2 flex items-center gap-2 text-xs font-semibold text-muted">
+                        <input
+                          name="email"
+                          type="checkbox"
+                          className="h-3.5 w-3.5 accent-primary"
+                        />
+                        Aussi par email
+                      </label>
+                    ) : null}
                     <Button type="submit" size="sm" variant="mint" className="w-full">
                       <Send aria-hidden className="h-4 w-4" />
                       Envoyer
